@@ -1,9 +1,660 @@
 \chapter{Identit\`a digitale}
 
 \section{Analisi dei requisiti}
+Come da requisiti, l’obbiettivo principale di BLINC è di creare un portadocumenti digitale decentralizzato
+i cui documenti inseriti rimangono sotto il controllo del proprietario.
+Quest’ultimo requisito introduce il concetto di sovranità del dato (o self-sovereign identity), ovvero il totale
+controllo della propria identità digitale senza dover dipendere su terzi con sistemi come Facebook in generale
+o SPID per la Pubblica Amministrazione.
+La self-sovereign identity è soltanto l’ultima di una serie di evoluzioni che la gestione dell’identità digitale
+ha subìto nel tempo: inizialmente si aveva il modello a silos, ovvero la creazione di credenziali diverse per ogni
+servizio di cui un utente fruisce.
+Successivamente si è passati ad un modello federato, nel quale le credenziali per un determinato servizio/sistema
+vengono riconosciute ed accettate anche in altri sistemi. Esempi di questo modello applicato in generale sono
+Facebook e Google Login, tramite i quali si può accedere ai siti/applicazioni che li supportano utilizzando le
+proprie credenziali Facebook/Google, mentre SPID è un esempio di un’applicazione a livello di Pubblica Amministrazione 
+di questo modello. 
+La self-sovereign identity non sarebbe mai stata possibile con i tradizionali sistemi di Identity Providing
+centralizzati, ma con l’avvento della blockchain si è finalmente potuto iniziare ad esplorare soluzioni di sovranità
+del dato grazie soprattutto a due importanti proprietà: la pseudonimizzazione e la decentralizzazione.
+La prima è fondamentale anche in ottica GDPR ed è data dall’intrinseca capacità della blockchain di mantenere 
+riferimenti matematici detti hash a informazioni, in questo caso identità, la seconda è importante in quanto un 
+identity provider basato su blockchain è sempre disponibile al contrario degli identity provider centralizzati che,
+se non disponibili, impossibilitano l’accesso a servizi.
+Moltissime aziende stanno implementando soluzioni di self-sovereign identity, e per BLINC sono state esaminate e
+valutate le seguenti:
 
 \section{Elenco dei prodotti e delle tecnologie disponibili}
 
+\begin{itemize}
+  \item \textbf{uPort}
+  Sviluppato sotto l’egida di ConsenSys, uPort è un sistema per la self-sovereign identity basato su Ethereum. 
+  \item \textbf{Civic}
+  Sviluppato dall’omonima azienda, Civic è una piattaforma composta da smart contract ed un token per lo scambio
+  di valore basata su Rootstock, una side-chain di Bitcoin che permette l’esecuzione di smart contract.
+  Civic fornisce una piattaforma sicura di self-sovereign identity accessibile dagli utenti tramite
+  la loro app, che funge da wallet per l’identità.
+  Civic ed i suoi identity partner possono fare una richiesta di credenziali all’utente, che può 
+  accettare o respingere, tramite un codice QR.
+  Nel sistema Civic ci sono tre diversi soggetti: i Validatori, ovvero istituzioni finanziarie,
+  entità governative e aziende che hanno la possibilità
+  di validare l’identità di singoli o di altre aziende che prendono parte al sistema
+  Civic come Utenti tramite delle transazioni di approvazione sulla blockchain chiamate attestazioni.
+  Una attestazione è in pratica l’hash di un’informazione dell’identità più metadati relativi ad essa
+  utilizzabile dai Fornitori di servizi per erogare servizi agli utenti abilitati. I fornitori di servizi possono
+  acquistare le attestazioni ai validatori tramite smart contract pagando con i token del sistema Civic.
+  \item \textbf{SelfKey}
+  Sviluppato dalla SelfKey Foundation, SelfKey è un sistema basato su Blockchain Ethereum composto
+  da un wallet personale per il possessore dell’identità, un marketplace di prodotti e servizi,
+  un protocollo basato su JSON-LD ed un token per scambiare valore.
+  L’identità dell’utente è salvata localmente sul suo smartphone sottoforma di wallet (coppia di chiavi),
+  al quale vengono associate delle dichiarazioni sugli attributi dell’utente (data di nascita, nome, lavoro…) 
+  che possono essere verificate da terzi (banche, organizzazione…)
+  in modo da poter accedere a determinati servizi. Con questo metodo si riduce
+  la quantità di dati condivisi alle terze parti allo stretto indispensabile.
+  
+  \includegraphics[scale=0.5]{selfkey}
+\end{itemize}
+
 \section{Descrizione della tecnologia scelta e motivazione}
+uPort è un insieme di protocolli, librerie e smart contract che creano uno strato interoperabile di identità, che possono aggiungere, togliere e verificare attributi ed attestazioni a sé stesse ed alle altre identità.
+
+Un’identità in uPort è formata da:
+
+\begin{itemize}
+  \item Un \textbf{MNID} (Multi Network IDentifier), che è un oggetto JSON codificato in base58 formato da un campo network, ovvero l’ID della chain Ethereum su cui si trova l’account
+  (ad esempio 0x1 per la mainnet) e un campo address il cui valore è un indirizzo Ethereum.
+  \item Una chiave privata necessaria per firmare transazioni da inviare alla blockchain
+  \item Una chiave pubblica inserita nel proprio DID Document salvato su IPFS e sullo smart contract Registry
+\end{itemize}
+
+uPort prevede la gestione di dati sia off-chain che on-chain. 
+Per quanto riguarda la parte on-chain uPort prevede un insieme di smart contract per la gestione delle identità che sono:
+
+\begin{itemize}
+  \item \textbf{Proxy}: uno per ogni identità, funge da rappresentante on-chain di essa. Ogni transazione che viene fatta
+  sulla blockchain viene fatta dallo smart contract Proxy e non direttamente dal wallet dell’identità, permettendo
+  di conseguenza di mantenere il possesso della propria identità digitale anche nel caso di smarrimento del 
+  device su cui è installato il wallet uPort.
+
+  \begin{lstlisting}[language=Solidity]
+// Proxy.sol
+pragma solidity 0.4.15;
+import "./libs/Owned.sol";
+
+
+contract Proxy is Owned {
+    event Forwarded (address indexed destination, uint value, bytes data);
+    event Received (address indexed sender, uint value);
+
+    function () payable { Received(msg.sender, msg.value); }
+
+    function forward(address destination, uint value, bytes data) public onlyOwner {
+        require(executeCall(destination, value, data));
+        Forwarded(destination, value, data);
+    }
+
+    // copied from GnosisSafe
+    // https://github.com/gnosis/gnosis-safe-contracts/blob/master/contracts/GnosisSafe.sol
+    function executeCall(address to, uint256 value, bytes data) internal returns (bool success) {
+        assembly {
+            success := call(gas, to, value, add(data, 0x20), mload(data), 0, 0)
+        }
+    }
+}
+  \end{lstlisting}
+  \item \textbf{IdentityManager}: uno per chain, funge da Factory degli smart contract Proxy e ne tiene traccia,
+  associando, oltre all’identità vera e propria associata al Proxy, altre identità fidate che permettono
+  il recupero del possesso del proprio contract Proxy in caso di smarrimento del wallet.
+
+  \begin{lstlisting}[language=Solidity]
+// IdentityManager.sol
+pragma solidity 0.4.15;
+import "./Proxy.sol";
+
+
+contract IdentityManager {
+    uint adminTimeLock;
+    uint userTimeLock;
+    uint adminRate;
+
+    event LogIdentityCreated(
+        address indexed identity,
+        address indexed creator,
+        address owner,
+        address indexed recoveryKey);
+
+    event LogOwnerAdded(
+        address indexed identity,
+        address indexed owner,
+        address instigator);
+
+    event LogOwnerRemoved(
+        address indexed identity,
+        address indexed owner,
+        address instigator);
+
+    event LogRecoveryChanged(
+        address indexed identity,
+        address indexed recoveryKey,
+        address instigator);
+
+    event LogMigrationInitiated(
+        address indexed identity,
+        address indexed newIdManager,
+        address instigator);
+
+    event LogMigrationCanceled(
+        address indexed identity,
+        address indexed newIdManager,
+        address instigator);
+
+    event LogMigrationFinalized(
+        address indexed identity,
+        address indexed newIdManager,
+        address instigator);
+
+    mapping(address => mapping(address => uint)) owners;
+    mapping(address => address) recoveryKeys;
+    mapping(address => mapping(address => uint)) limiter;
+    mapping(address => uint) public migrationInitiated;
+    mapping(address => address) public migrationNewAddress;
+
+    modifier onlyOwner(address identity) {
+        require(isOwner(identity, msg.sender));
+        _;
+    }
+
+    modifier onlyOlderOwner(address identity) {
+        require(isOlderOwner(identity, msg.sender));
+        _;
+    }
+
+    modifier onlyRecovery(address identity) {
+        require(recoveryKeys[identity] == msg.sender);
+        _;
+    }
+
+    modifier rateLimited(address identity) {
+        require(limiter[identity][msg.sender] < (now - adminRate));
+        limiter[identity][msg.sender] = now;
+        _;
+    }
+
+    modifier validAddress(address addr) { //protects against some weird attacks
+        require(addr != address(0));
+        _;
+    }
+
+    /// @dev Contract constructor sets initial timelock limits
+    /// @param _userTimeLock Time before new owner added by recovery can control proxy
+    /// @param _adminTimeLock Time before new owner can add/remove owners
+    /// @param _adminRate Time period used for rate limiting a given key for admin functionality
+    function IdentityManager(uint _userTimeLock, uint _adminTimeLock, uint _adminRate) {
+        require(_adminTimeLock >= _userTimeLock);
+        adminTimeLock = _adminTimeLock;
+        userTimeLock = _userTimeLock;
+        adminRate = _adminRate;
+    }
+
+    /// @dev Creates a new proxy contract for an owner and recovery
+    /// @param owner Key who can use this contract to control proxy. Given full power
+    /// @param recoveryKey Key of recovery network or address from seed to recovery proxy
+    /// Gas cost of 289,311
+    function createIdentity(address owner, address recoveryKey) public validAddress(recoveryKey) {
+        Proxy identity = new Proxy();
+        owners[identity][owner] = now - adminTimeLock; // This is to ensure original owner has full power from day one
+        recoveryKeys[identity] = recoveryKey;
+        LogIdentityCreated(identity, msg.sender, owner,  recoveryKey);
+    }
+
+    /// @dev Creates a new proxy contract for an owner and recovery and allows an initial forward call which would be to set the registry in our case
+    /// @param owner Key who can use this contract to control proxy. Given full power
+    /// @param recoveryKey Key of recovery network or address from seed to recovery proxy
+    /// @param destination Address of contract to be called after proxy is created
+    /// @param data of function to be called at the destination contract
+    function createIdentityWithCall(address owner, address recoveryKey, address destination, bytes data) public validAddress(recoveryKey) {
+        Proxy identity = new Proxy();
+        owners[identity][owner] = now - adminTimeLock; // This is to ensure original owner has full power from day one
+        recoveryKeys[identity] = recoveryKey;
+        LogIdentityCreated(identity, msg.sender, owner,  recoveryKey);
+        identity.forward(destination, 0, data);
+    }
+
+    /// @dev Allows a user to transfer control of existing proxy to this contract. Must come through proxy
+    /// @param owner Key who can use this contract to control proxy. Given full power
+    /// @param recoveryKey Key of recovery network or address from seed to recovery proxy
+    /// Note: User must change owner of proxy to this contract after calling this
+    function registerIdentity(address owner, address recoveryKey) public validAddress(recoveryKey) {
+        require(recoveryKeys[msg.sender] == 0); // Deny any funny business
+        owners[msg.sender][owner] = now - adminTimeLock; // This is to ensure original owner has full power from day one
+        recoveryKeys[msg.sender] = recoveryKey;
+        LogIdentityCreated(msg.sender, msg.sender, owner, recoveryKey);
+    }
+
+    /// @dev Allows a user to forward a call through their proxy.
+    function forwardTo(Proxy identity, address destination, uint value, bytes data) public onlyOwner(identity) {
+        identity.forward(destination, value, data);
+    }
+
+    /// @dev Allows an olderOwner to add a new owner instantly
+    function addOwner(Proxy identity, address newOwner) public onlyOlderOwner(identity) rateLimited(identity) {
+        require(!isOwner(identity, newOwner));
+        owners[identity][newOwner] = now - userTimeLock;
+        LogOwnerAdded(identity, newOwner, msg.sender);
+    }
+
+    /// @dev Allows a recoveryKey to add a new owner with userTimeLock waiting time
+    function addOwnerFromRecovery(Proxy identity, address newOwner) public onlyRecovery(identity) rateLimited(identity) {
+        require(!isOwner(identity, newOwner));
+        owners[identity][newOwner] = now;
+        LogOwnerAdded(identity, newOwner, msg.sender);
+    }
+
+    /// @dev Allows an owner to remove another owner instantly
+    function removeOwner(Proxy identity, address owner) public onlyOlderOwner(identity) rateLimited(identity) {
+        // an owner should not be allowed to remove itself
+        require(msg.sender != owner);
+        delete owners[identity][owner];
+        LogOwnerRemoved(identity, owner, msg.sender);
+    }
+
+    /// @dev Allows an owner to change the recoveryKey instantly
+    function changeRecovery(Proxy identity, address recoveryKey) public
+        onlyOlderOwner(identity)
+        rateLimited(identity)
+        validAddress(recoveryKey)
+    {
+        recoveryKeys[identity] = recoveryKey;
+        LogRecoveryChanged(identity, recoveryKey, msg.sender);
+    }
+
+    /// @dev Allows an owner to begin process of transfering proxy to new IdentityManager
+    function initiateMigration(Proxy identity, address newIdManager) public
+        onlyOlderOwner(identity)
+        validAddress(newIdManager)
+    {
+        migrationInitiated[identity] = now;
+        migrationNewAddress[identity] = newIdManager;
+        LogMigrationInitiated(identity, newIdManager, msg.sender);
+    }
+
+    /// @dev Allows an owner to cancel the process of transfering proxy to new IdentityManager
+    function cancelMigration(Proxy identity) public onlyOwner(identity) {
+        address canceledManager = migrationNewAddress[identity];
+        delete migrationInitiated[identity];
+        delete migrationNewAddress[identity];
+        LogMigrationCanceled(identity, canceledManager, msg.sender);
+    }
+
+    /// @dev Allows an owner to finalize migration once adminTimeLock time has passed
+    /// WARNING: before transfering to a new address, make sure this address is "ready to recieve" the proxy.
+    /// Not doing so risks the proxy becoming stuck.
+    function finalizeMigration(Proxy identity) public onlyOlderOwner(identity) {
+        require(migrationInitiated[identity] != 0 && migrationInitiated[identity] + adminTimeLock < now);
+        address newIdManager = migrationNewAddress[identity];
+        delete migrationInitiated[identity];
+        delete migrationNewAddress[identity];
+        identity.transfer(newIdManager);
+        delete recoveryKeys[identity];
+        // We can only delete the owner that we know of. All other owners
+        // needs to be removed before a call to this method.
+        delete owners[identity][msg.sender];
+        LogMigrationFinalized(identity, newIdManager, msg.sender);
+    }
+
+    function isOwner(address identity, address owner) public constant returns (bool) {
+        return (owners[identity][owner] > 0 && (owners[identity][owner] + userTimeLock) <= now);
+    }
+
+    function isOlderOwner(address identity, address owner) public constant returns (bool) {
+        return (owners[identity][owner] > 0 && (owners[identity][owner] + adminTimeLock) <= now);
+    }
+
+    function isRecovery(address identity, address recoveryKey) public constant returns (bool) {
+        return recoveryKeys[identity] == recoveryKey;
+    }
+}
+  \end{lstlisting}
+
+  \item \textbf{UportRegistry}: uno per chain, serve per aggiungere attributi in forma chiave:valore alle identità,
+  in particolare l’hash del DID Document caricato su IPFS.
+  
+  \begin{lstlisting}[language=Solidity]
+//UportRegistry.sol
+pragma solidity 0.4.8;
+
+contract UportRegistry{
+  uint public version;
+  address public previousPublishedVersion;
+  mapping(bytes32 => mapping(address => mapping(address => bytes32))) public registry;
+
+  function UportRegistry(address _previousPublishedVersion) {
+    version = 3;
+    previousPublishedVersion = _previousPublishedVersion;
+  }
+
+  event Set(
+    bytes32 indexed registrationIdentifier,
+    address indexed issuer,
+    address indexed subject,
+    uint updatedAt);
+
+  //create or update
+  function set(bytes32 registrationIdentifier, address subject, bytes32 value){
+      Set(registrationIdentifier, msg.sender, subject, now);
+      registry[registrationIdentifier][msg.sender][subject] = value;
+  }
+
+  function get(bytes32 registrationIdentifier, address issuer, address subject) constant returns(bytes32){
+      return registry[registrationIdentifier][issuer][subject];
+  }
+}
+  \end{lstlisting}
+
+  \item \textbf{EthereumClaimsRegistry}: uno per chain, serve per aggiungere dichiarazioni ed attestazioni alle identità.
+  
+  \begin{lstlisting}[language=Solidity]
+//EthereumClaimsRegistry.sol
+pragma solidity 0.4.19;
+
+
+/// @title Ethereum Claims Registry - A repository storing claims issued
+///        from any Ethereum account to any other Ethereum account.
+contract EthereumClaimsRegistry {
+
+    mapping(address => mapping(address => mapping(bytes32 => bytes32))) public registry;
+
+    event ClaimSet(
+        address indexed issuer,
+        address indexed subject,
+        bytes32 indexed key,
+        bytes32 value,
+        uint updatedAt);
+
+    event ClaimRemoved(
+        address indexed issuer,
+        address indexed subject,
+        bytes32 indexed key,
+        uint removedAt);
+
+    /// @dev Create or update a claim
+    /// @param subject The address the claim is being issued to
+    /// @param key The key used to identify the claim
+    /// @param value The data associated with the claim
+    function setClaim(address subject, bytes32 key, bytes32 value) public {
+        registry[msg.sender][subject][key] = value;
+        ClaimSet(msg.sender, subject, key, value, now);
+    }
+
+    /// @dev Create or update a claim about yourself
+    /// @param key The key used to identify the claim
+    /// @param value The data associated with the claim
+    function setSelfClaim(bytes32 key, bytes32 value) public {
+        setClaim(msg.sender, key, value);
+    }
+
+    /// @dev Allows to retrieve claims from other contracts as well as other off-chain interfaces
+    /// @param issuer The address of the issuer of the claim
+    /// @param subject The address to which the claim was issued to
+    /// @param key The key used to identify the claim
+    function getClaim(address issuer, address subject, bytes32 key) public constant returns(bytes32) {
+        return registry[issuer][subject][key];
+    }
+
+    /// @dev Allows to remove a claims from the registry.
+    ///      This can only be done by the issuer or the subject of the claim.
+    /// @param issuer The address of the issuer of the claim
+    /// @param subject The address to which the claim was issued to
+    /// @param key The key used to identify the claim
+    function removeClaim(address issuer, address subject, bytes32 key) public {
+        require(msg.sender == issuer || msg.sender == subject);
+        require(registry[issuer][subject][key] != 0);
+        delete registry[issuer][subject][key];
+        ClaimRemoved(msg.sender, subject, key, now);
+    }
+}
+  \end{lstlisting}
+\end{itemize}
+
+
+Per quanto riguarda invece le interazioni off-chain uPort utilizza JWT (JSON Web Token)
+firmati, che possono essere utilizzati per:
+\begin{itemize}
+  \item Ricevere/fare richieste di condivisione di credenziali da/ad altre identità uPort
+  \item Inviare/ricevere attestazioni a/da altre identità uPort
+\end{itemize}
+
+I JWT sono una maniera standardizzata dalla RFC per scambiare informazioni
+tra parti sotto forma di oggetto JSON firmato ed eventualmente criptato.
+Sono utilizzati principalmente in due ambiti:
+\begin{enumerate}
+  \item \textbf{Autorizzazione}: una volta che un utente ha acceduto ad un sito/servizio,
+  un JWT viene aggiunto ad ogni richiesta successiva per consentire
+  l’accesso a risorse protette (API, ad esempio).
+  \item \textbf{Scambio di informazioni}: ambito d’interesse per uPort,
+  un JWT è particolarmente indicato per scambiare informazioni per due motivi:
+  è un formato di dimensioni ridotte adatto ad essere aggiunto ad un URL
+  ed essendo un oggetto JSON firmato si ha la sicurezza che le informazioni ricevute
+  sono quelle inviati inizialmente e che non sono state modificate nel frattempo.
+\end{enumerate}
+
+uPort, come tutte le soluzioni di self-sovereign identity, inverte totalmente
+il paradigma dell’identità online:
+se prima erano i siti web e servizi su cui ci si registrava ad avere sotto controllo
+tutte le nostre informazioni, avendo quindi la possibilità di rivenderle al miglior
+offerente per scopi pubblicitari od altro, con uPort l’identità e le informazioni
+associate ad essa sono totalmente sotto il controllo del proprietario dell’identità
+e sono le terze parti a dover richiedere la informazioni necessarie all’utente,
+che di conseguenza ha anche un maggiore controllo su quali e quante informazioni fornisce.
+
+Questo processo di rilascio di informazioni personali a terzi in uPort si chiama \textbf{Selective Disclosure Flow}, e segue questo flusso:
+
+\includegraphics[scale=0.8]{selectivedisclosure}
+
+La Selective Disclosure Request fatta dal servizio che richiede le credenziali
+all’utente non è altro che un JWT che segue uno schema ben formato inviato ad un
+opportuno endpoint gestito da uPort. Una volta che la richiesta è arrivata al server
+Chasqui (che gestisce lo scambio di JWT tra app uPort e normali web app o DApp)
+la web app/DApp fa polling sul server fino a quando l’utente non approva o nega
+l’accesso alle informazioni richieste: in caso di approvazione la web app/DApp ha
+finalmente accesso alle informazioni richieste.
+
+Molto spesso, come nel caso di BLINC, le informazioni vengono richieste per poi essere
+attestate, ad esempio un servizio di e-ticketing potrebbe
+richiedere nome e cognome dell’acquirente per attestare che
+quell’identità ha effettivamente acquistato un biglietto. Per questo motivo
+in congiunzione al flusso di richiesta di informazioni uPort prevede il
+Send Verification Flow, ovvero il processo di attestazione di attributi
+e credenziali dell’identità.
+
+\includegraphics{verifiedclaim}
+
+Il Verified Claim creato dall’issuer (che è l’identità uPort che ha creato l’attestazione)
+è un JWT che segue uno schema ben formato inviato allo stesso server Chasqui citato
+in precedenza e segue un flusso molto simile a quello della richiesta di credenziali.
+
+\subsection{Perché è stato scelto uPort?}
+Tra tutte le alternative disponibili è stato scelto uPort perché tra tutti i sistemi
+di gestione dell’identità digitale e di sovranità del dato è quello con un grado di
+maturità e supporto di sviluppatori e community maggiore. 
+Inoltre, il fatto che sia costruito su Ethereum rende semplice l’interoperabilità
+con smart contract sviluppati esternamente a uPort come ad esempio, nel caso di BLINC,
+quello di gestione dei documenti dei migranti.
 
 \section{Integrazione all'interno del progetto BLINC}
+
+All’interno del progetto uPort è stato utilizzato per la gestione di dichiarazioni
+ed endorsement sui migranti e la creazione di uPort Identity associate ad essi.
+
+\subsection{Gestione di dichiarazioni ed endorsement}
+Per quanto riguarda questo caso d’uso di BLINC ci si
+riferisce a questo flusso di interazione:
+
+\includegraphics[scale=0.3]{adddeclarations}
+
+Alla rispettiva chiamata API il backend di BLINC va a recuperare dal database
+il wallet associato al migrante che si è autenticato e firma una transazione
+che ha come destinatario lo smart contract ethereum-claims-registry, che permette
+di associare delle dichiarazioni da parte di un indirizzo Ethereum 
+verso un altro in forma chiave:valore.
+
+\textbf{Implementazione}
+
+\begin{lstlisting}[language=JavaScript]
+/**
+* Gets all the declaration made and returns them.
+* @param {string} id the id of the owner of the declarations.
+*
+* @returns {Array} declarations an array of declarations.
+*/
+Declaration.getAllDeclarations = (id, cb) => {
+    Declaration.app.models.migrant.findOne(
+    { where: { id } },
+    async (err, instance) => {
+        if (err) cb(err, null);
+        const uportIdentity = initialize(instance);
+        const declarations = await uportIdentity.getAllAttestations();
+        cb(null, declarations);
+    }
+    );
+};
+
+/**
+* Adds a declaration for a specific issuer
+* @param {string} issuer the id of the owner of the declarations.
+* @param {string} subject the subject of the declaration
+* @param {string} key
+* @param {string} value the value of the declaration itself
+*
+* @returns {Object} response the added declaration.
+*/
+Declaration.addDeclaration = (issuer, subject, key, value, cb) => {
+    let issuerUportIdentity, signer, credentials, declaration, response;
+
+    Declaration.app.models.migrant.findOne(
+    { where: { id: issuer } },
+    async (err, instance) => {
+        if (err) cb(err, null);
+
+        try {
+        issuerUportIdentity = initialize(instance);
+
+        // Gets the SimpleSigner object with the private key of the user, which is needed to sign transactions
+        signer = SimpleSigner(issuerUportIdentity.deviceKeys.privateKey);
+
+        // Instantiates the Credentials class, a uPort class which simplifies the creation of signed attestation JWTs
+        credentials = new Credentials({
+            address: issuerUportIdentity.mnid,
+            signer: signer,
+            networks: {
+            [issuerUportIdentity.network.id]: {
+                ...issuerUportIdentity.network
+            }
+            }
+        });
+
+        // The attest function creates a signed attestation JWT
+        declaration = await credentials.attest({
+            sub: subject,
+            claim: { [key]: value }
+        });
+
+        // The consume function is a UPortClient function which parses uPort uris and relays them to the responsible functions
+        response = await issuerUportIdentity.consume(
+            `me.uport:add?attestations=${declaration}`
+        );
+
+        cb(null, response);
+        } catch (error) {
+        cb(error, null);
+        }
+    }
+    );
+};
+\end{lstlisting}
+
+\subsection{Creazione di uPort Identity}
+
+Si segue questo flusso ogni volta che un nuovo utente si iscrive alla piattaforma:
+
+\includegraphics[scale=0.3]{createidentities}
+
+Durante la registrazione viene istanziato sulla blockchain Ethereum privata 
+lo smart contract Proxy associato all’utente e vengono salvate su database le credenziali
+dell’utente (nome, cognome…) e gli si associa un wallet che viene poi criptato. A questo punto
+ad ogni login dell’utente viene deserializzata l’identità uPort
+ad esso associata ed il wallet, in modo da poter interagire con la chain.
+
+\textbf{Implementazione}
+
+\begin{lstlisting}[language=JavaScript]
+/**
+* creates a new migrant instance in uPort and in mongoDB.
+* input params are personal info of the user.
+* @param {String} name
+* @param {String} familyName
+* @param {string} phoneNumber
+* @param {String} email
+* @param {String} password
+*
+* @returns {Object} the migrant created instance
+*/
+Migrant.addMigrant = (name, familyName, phoneNumber, email, password, cb) => {
+    Migrant.app.dataSources.BlincTestDB.autoupdate('migrant', async err => {
+    if (err) throw err;
+
+    let migrantID;
+
+    const info = {
+        name,
+        familyName,
+        phoneNumber,
+        email,
+        password
+    };
+
+    try {
+        migrantID = await createUportId(info);
+        migrantID = await initializeUportId(migrantID);
+    } catch (error) {
+        throw error;
+    }
+
+    migrantID = {
+        id: migrantID.id,
+        info: migrantID.info,
+        deviceKeys: migrantID.deviceKeys,
+        recoveryKeys: migrantID.recoveryKeys,
+        mnid: migrantID.mnid,
+        initialized: migrantID.initialized
+    };
+
+    Migrant.app.models.migrant.create([migrantID], function(err, migrant) {
+        if (err) {
+        cb(err, null);
+        }
+    });
+
+    cb(null, migrantID);
+    });
+};
+
+/**
+* Gets a migrant from the datasource
+* @param {String} email
+* @param {String} password
+*
+* @returns {Object} the migrant instance
+*/
+Migrant.getMigrant = (email, password, cb) => {
+    Migrant.app.models.migrant.findOne(
+    { where: { 'info.email': email, 'info.password': password } },
+    (err, instance) => {
+        if (err) cb(err, null);
+
+        cb(null, instance);
+    }
+    );
+};
+\end{lstlisting}

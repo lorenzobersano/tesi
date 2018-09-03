@@ -2,4 +2,100 @@
 
 \section{Problemi aperti}
 
+\subsection{Su Ethereum e blockchain in generale}
+
+\textbf{Scalabilità}
+Eseguire calcoli su una blockchain è troppo lento e costoso, quindi salvare e fare calcoli
+su grandi quantità di dati non è fattibile. Per fare un confronto, il circuito VISA processa circa 10.000 transazioni al secondo,
+Ethereum ne processa al massimo 15 al secondo, con grandi problemi quando
+la rete è molto utilizzata (come nel dicembre 2017 con il fenomeno CryptoKitties)
+che causano ritardo nel processamento di transazioni e aumento del costo del gas.
+
+\textbf{Privacy}
+I dati su una blockchain sono accessibili da tutti, rendendo impossibile il salvataggio e la computazione di dati sensibili.
+Ciò restringe il numero di applicazioni possibili per la blockchain.
+
+\subsection{Su uPort}
+
+\textbf{SDK per mobile}
+
+Al momento della scrittura di questa sezione non è ancora disponibile un SDK maturo
+per l’utilizzo dei protocolli di uPort su applicazioni native Android e iOS.
+
+\textbf{Parziale centralizzazione}
+
+Al momento uPort utilizza ancora dei microservizi per rendere possibili alcune parti fondamentali
+dell’architettura come ad esempio il server di messaging Chasqui o il server che finanzia le transazioni Sensui,
+non è sono ancora decentralizzati in mancanza di alternative solide ai modelli centralizzati.
+
+\subsection{Su BLINC}
+
+\textbf{Centralizzazione}
+
+A causa delle scadenze non rispettate dal team di uPort per quanto riguarda le SDK mobile e delle scadenze
+che il team di BLINC doveva rispettare è stato necessario spostare il wallet degli utenti su un server centrale
+invece che mantenerlo sul device dei migranti. Questo va parzialmente contro i principi di decentralizzazione
+e sovranità del dato che caratterizzano la blockchain ed il progetto uPort.
+
 \section{Possibili scenari futuri}
+
+\subsection{Su Ethereum e blockchain in generale}
+
+\textbf{Scalabilità}
+
+Sono in diverse fasi di sviluppo (alcune in fasi embrionali, altre già oltre il MVP)
+alcune possibili soluzioni per risolvere i problemi di scalabilità di Ethereum.
+
+\begin{itemize}
+  \item Raiden
+  \item Plasma
+  \item Casper
+  \item Sharding
+\end{itemize}
+
+\textbf{Privacy}
+
+Diverse startup ed aziende stanno lavorando per rendere possibile la computazione
+e il salvataggio di dati privati, tra cui Keep ed Enigma: la prima avvalendosi di contenitori
+off-chain di dati privati e la seconda tramite l’uso di smart contract privati.
+
+\subsection{Su uPort}
+
+\textbf{SDK mobile}
+Lo sviluppo delle SDK procede come si vede sui repository GitHub di uPort,
+quindi si raggiungerà il livello di maturazione necessario a decentralizzare
+l’architettura di BLINC in relativamente poco tempo.
+
+\textbf{Rivoluzione dell'architettura di uPort}
+L’architettura uPort cambierà radicalmente di qui a poco, passando da un’astrazione
+dell’identità basata su smart contract sviluppati internamente in uPort ad una architettura
+basata sugli standard proposti dalla Decentralized Identity Foundation.
+A differenza dell’attuale architettura dove la creazione di un’identità richiede
+due transazioni (deploy del contratto Proxy tramite chiamata allo smart contract  IdentityManager
+e registrazione dell’Identity Document su smart contract Registry), la registrazione
+di un’identità nella nuova architettura richiede soltanto
+la creazione di un account Ethereum, ed è quindi gratuita.
+
+
+\subsection{Su BLINC}
+
+\textbf{Spostamento del wallet su telefono}
+
+Una volta che saranno rilasciate le SDK mobile di uPort si procederà a decentralizzare
+l’architettura, spostando i wallet degli utenti da MongoDB al loro smartphone e di fatto
+rimuovendo la necessità di avere un backend centralizzato.
+
+\textbf{Salvataggio degli attributi delle uPort Identity su Identity Hub}
+
+Invece di salvare gli attributi delle identità su MongoDB, l’attuale soluzione provvisoria
+e centralizzata, si passerà all’utilizzo di Identity Hub che sono, come descritto
+sul repository GitHub della Decentralized Identity Foundation, dei datastore che contengono
+oggetti significativi per l’identità in locazioni conosciute. Ogni oggetto in un Hub è firmato
+dall’identità proprietaria ed è accessibile globalmente attraverso delle API conosciute globalmente.
+Il vantaggio di un Hub rispetto ad un datastore tradizionale come può essere appunto un database
+Mongo è la decentralizzazione: un’identità può avere una o più istanze di Hub che sono indirizzabili
+tramite un meccanismo di routing basato su URI collegati all’identificatore dell’identità.
+Tutte le istanze di Hub si sincronizzano tra di loro, garantendo così la consistenza dei dati
+al loro interno e permettendo al proprietario dei dati di accedervi da ovunque, anche offline.
+Molto probabilmente si sfrutteranno i 3box,
+ovvero l’implementazione del team di uPort della specifica degli Identity Hub.
