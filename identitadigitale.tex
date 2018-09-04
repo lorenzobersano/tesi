@@ -1,35 +1,38 @@
 \chapter{Identit\`a digitale}
 
 \section{Analisi dei requisiti}
-Come da requisiti, l’obbiettivo principale di BLINC è di creare un portadocumenti digitale decentralizzato
+Come da requisiti, l’obbiettivo principale di BLINC è quello di creare un portadocumenti digitale decentralizzato
 i cui documenti inseriti rimangono sotto il controllo del proprietario.
-Quest’ultimo requisito introduce il concetto di sovranità del dato (o self-sovereign identity), ovvero il totale
-controllo della propria identità digitale senza dover dipendere su terzi con sistemi come Facebook in generale
-o SPID per la Pubblica Amministrazione.
+Quest’ultimo requisito introduce il concetto di \textbf{sovranità del dato} (o self-sovereign identity), ovvero il totale
+controllo della propria identità digitale senza dover dipendere da terzi come Facebook o SPID per la Pubblica Amministrazione.
+
 La self-sovereign identity è soltanto l’ultima di una serie di evoluzioni che la gestione dell’identità digitale
 ha subìto nel tempo: inizialmente si aveva il modello a silos, ovvero la creazione di credenziali diverse per ogni
 servizio di cui un utente fruisce.
+
 Successivamente si è passati ad un modello federato, nel quale le credenziali per un determinato servizio/sistema
 vengono riconosciute ed accettate anche in altri sistemi. Esempi di questo modello applicato in generale sono
 Facebook e Google Login, tramite i quali si può accedere ai siti/applicazioni che li supportano utilizzando le
 proprie credenziali Facebook/Google, mentre SPID è un esempio di un’applicazione a livello di Pubblica Amministrazione 
 di questo modello. 
+
 La self-sovereign identity non sarebbe mai stata possibile con i tradizionali sistemi di Identity Providing
 centralizzati, ma con l’avvento della blockchain si è finalmente potuto iniziare ad esplorare soluzioni di sovranità
 del dato grazie soprattutto a due importanti proprietà: la pseudonimizzazione e la decentralizzazione.
+
 La prima è fondamentale anche in ottica GDPR ed è data dall’intrinseca capacità della blockchain di mantenere 
-riferimenti matematici detti hash a informazioni, in questo caso identità, la seconda è importante in quanto un 
+riferimenti ad informazioni tramite il loro hash, la seconda è importante in quanto un 
 identity provider basato su blockchain è sempre disponibile al contrario degli identity provider centralizzati che,
 se non disponibili, impossibilitano l’accesso a servizi.
-Moltissime aziende stanno implementando soluzioni di self-sovereign identity, e per BLINC sono state esaminate e
+Alcune aziende stanno implementando soluzioni di self-sovereign identity, e per BLINC sono state esaminate e
 valutate le seguenti:
 
 \section{Elenco dei prodotti e delle tecnologie disponibili}
 
 \begin{itemize}
-  \item \textbf{uPort}
+  \item \textbf{uPort}:
   Sviluppato sotto l’egida di ConsenSys, uPort è un sistema per la self-sovereign identity basato su Ethereum. 
-  \item \textbf{Civic}
+  \item \textbf{Civic}:
   Sviluppato dall’omonima azienda, Civic è una piattaforma composta da smart contract ed un token per lo scambio
   di valore basata su Rootstock, una side-chain di Bitcoin che permette l’esecuzione di smart contract.
   Civic fornisce una piattaforma sicura di self-sovereign identity accessibile dagli utenti tramite
@@ -43,7 +46,14 @@ valutate le seguenti:
   Una attestazione è in pratica l’hash di un’informazione dell’identità più metadati relativi ad essa
   utilizzabile dai Fornitori di servizi per erogare servizi agli utenti abilitati. I fornitori di servizi possono
   acquistare le attestazioni ai validatori tramite smart contract pagando con i token del sistema Civic.
-  \item \textbf{SelfKey}
+
+  \begin{figure}[!ht]
+    \includegraphics[scale=0.5]{civic}
+    \caption{Diagramma di funzionamento di Civic.}
+    \label{fig:civic}
+  \end{figure}
+
+  \item \textbf{SelfKey}:
   Sviluppato dalla SelfKey Foundation, SelfKey è un sistema basato su Blockchain Ethereum composto
   da un wallet personale per il possessore dell’identità, un marketplace di prodotti e servizi,
   un protocollo basato su JSON-LD ed un token per scambiare valore.
@@ -53,7 +63,11 @@ valutate le seguenti:
   in modo da poter accedere a determinati servizi. Con questo metodo si riduce
   la quantità di dati condivisi alle terze parti allo stretto indispensabile.
   
-  \includegraphics[scale=0.5]{selfkey}
+  \begin{figure}[!ht]
+    \includegraphics[scale=0.5]{selfkey}
+    \caption{Diagramma di funzionamento di SelfKey.}
+    \label{fig:selfkey}
+  \end{figure}
 \end{itemize}
 
 \section{Descrizione della tecnologia scelta e motivazione}
@@ -482,7 +496,7 @@ Inoltre, il fatto che sia costruito su Ethereum rende semplice l’interoperabil
 con smart contract sviluppati esternamente a uPort come ad esempio, nel caso di BLINC,
 quello di gestione dei documenti dei migranti.
 
-\section{Integrazione all'interno del progetto BLINC}
+\section{Integrazione nel progetto BLINC}
 
 All’interno del progetto uPort è stato utilizzato per la gestione di dichiarazioni
 ed endorsement sui migranti e la creazione di uPort Identity associate ad essi.
@@ -491,7 +505,11 @@ ed endorsement sui migranti e la creazione di uPort Identity associate ad essi.
 Per quanto riguarda questo caso d’uso di BLINC ci si
 riferisce a questo flusso di interazione:
 
-\includegraphics[scale=0.3]{adddeclarations}
+\begin{figure}[!ht]
+    \includegraphics[width=\linewidth]{adddeclarations}
+    \caption{Flusso di gestione delle dichiarazioni sull'utente.}
+    \label{fig:adddeclarations}
+  \end{figure}
 
 Alla rispettiva chiamata API il backend di BLINC va a recuperare dal database
 il wallet associato al migrante che si è autenticato e firma una transazione
@@ -578,7 +596,11 @@ Declaration.addDeclaration = (issuer, subject, key, value, cb) => {
 
 Si segue questo flusso ogni volta che un nuovo utente si iscrive alla piattaforma:
 
-\includegraphics[scale=0.3]{createidentities}
+\begin{figure}[!ht]
+    \includegraphics[width=\linewidth]{createidentities}
+    \caption{Flusso di creazione di identità.}
+    \label{fig:createidentities}
+  \end{figure}
 
 Durante la registrazione viene istanziato sulla blockchain Ethereum privata 
 lo smart contract Proxy associato all’utente e vengono salvate su database le credenziali
@@ -657,4 +679,243 @@ Migrant.getMigrant = (email, password, cb) => {
     }
     );
 };
+\end{lstlisting}
+
+Le funzioni \texttt{createUportId} e \texttt{initializeUportId} fanno parte di una piccola libreria scritta da me che funge da middleware tra
+la business logic raggiungibile tramite chiamate API e la libreria \texttt{uport-js-client} (modificata ampiamente per i requisiti di BLINC),
+che simula il funzionamento dei protocolli uPort. Qui il codice delle due funzioni:
+
+\begin{lstlisting}[language=JavaScript]
+/**
+ * creates a UportClient instance.
+ * @param {Object} info personal info of the user.
+ *
+ * @returns {Promise<UPortClient>} the promise to have a UPortClient with specified infos.
+ */
+const createUportId = (info = {}) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const uportClient = new UPortClient(config, { info });
+      // Creates a keypair for the uPort client
+      uportClient.initKeys();
+
+      const accounts = await web3.eth.getAccounts();
+      const miner = accounts[0];
+
+      const fundTx = {
+        from: miner,
+        to: uportClient.deviceKeys.address,
+        value: 0.2 * 1.0e18
+      };
+
+      // Sends transaction to fund the uPort client in order to deploy uPort contracts later
+      await web3.eth.sendTransaction(fundTx);
+
+      console.log('Funded identity');
+
+      resolve(uportClient);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+\end{lstlisting}
+
+\begin{lstlisting}[language=JavaScript]
+/**
+* Initializes a UportClient instance, meaning that it will deploy uPort IdentityManager contract, save the DID Document on IPFS and save it on Registry contract.
+* @param {UPortClient} uportClient an instance of UPortClient.
+* @param {Object} appDDO facultative object with additional info in UPortClient is an instance of a uPort application
+*
+* @returns {Promise<UPortClient>} the promise to have a initialized UPortClient.
+*/
+const initializeUportId = (uportClient, appDDO = {}) => {
+    return new Promise(async (resolve, reject) => {
+    if (uportClient) {
+        try {
+            await uportClient.initializeIdentity(appDDO);
+            resolve(uportClient);
+        } catch (error) {
+            reject(error);
+        }
+    } else reject('An uPort ID must be created!');
+    });
+};
+\end{lstlisting}
+
+La libreria \texttt{uport-js-client} mette a disposizione una classe
+
+\texttt{UPortClient} così fatta:
+
+\begin{lstlisting}[language=JavaScript]
+class UPortClient {
+    constructor(config = {}, initState = {}) {
+        this.responseHandler = configResponseHandler(config.responseHandler);
+
+        // Object that contains user's info if passed to the constructor, else empty object
+        this.info = initState.info || {};
+
+        // Keypair of the user necessary to sign transactions
+        this.deviceKeys = config.deviceKeys;
+
+        // Keypair of another identity, used to recover user's identity (Not used in BLINC as for now Identities are saved on a DB)
+        this.recoveryKeys = config.recoveryKeys;
+
+        /* Object with this form:
+         *  network: {
+         *   id: "0x456719", this is the id of the private blockchain deployed for BLINC
+         *   rpcUrl: "http://10.83.0.11:8545", this is the endpoint we connect to in order to communicate with the blockchain via EthJS, a JavaScript library
+         *   claimsRegistry: "0xa7b3058152165c72a4dd7c4812c5964f1c26f00d", this is the address of the EthereumClaimsRegistry contract on BLINC's private chain
+         *   registry: "0xdb571079af66edbb1a56d22809584d39c20001d9", this is the address of the UportRegistry contract on BLINC's private chain
+         *   identityManager: "0xff37a57b8d373518abe222db1077ed9a968a5fdf", this is the address of the IdentityManager contract on BLINC's private chain
+         *   storage: "0x7e27e8f3aa4bda26502c38ccd28a4838aeca7966", this is the address of the smart contract that stores the IPFS hashes of user's documents
+         *  },
+         */
+        this.network = config.network
+        ? configNetwork(config.network)
+        : configNetwork(networkConfig.network); // have some default connect/setup testrpc
+    
+        if (this.network) {
+            // Crates an instance of the IPFS class, which allows us to communicate with the IPFS node specified in the configuration
+            this.ipfs = new IPFS(networkConfig.ipfsConfig);
+        
+            this.registryNetwork = {
+                [this.network.id]: {
+                    registry: this.network.registry,
+                    rpcUrl: this.network.rpcUrl
+                }
+            }
+        };
+    
+        const registry = new UportLite({
+            networks: this.registryNetwork
+        });
+
+        // Function that uses the UportLite library
+        this.registry = address =>
+            new Promise((resolve, reject) => {
+                registry(address, (error, profile) => {
+                    if (error) return reject(error);
+        
+                    resolve(profile);
+                });
+        });
+    
+        this.verifyJWT = jwt => verifyJWT({ registry: this.registry, address: this.mnid }, jwt);
+
+        // Sets the HttpProvider, necessary object for EthJS library in order 
+        // to interact with the Ethereum blockchain
+        this.provider = config.provider || new HttpProvider(this.network.rpcUrl);
+
+        // Creates the EthJS object with the just created HttpProvider as a parameter
+        this.ethjs = this.provider ? new EthJS(this.provider) : null;
+
+        // Sets addresses of contracts passed in the configuration object
+        this.claimsRegistryAddress = this.network.claimsRegistry;
+        this.registryAddress = this.network.registry;
+        this.identityManagerAddress = this.network.identityManager;
+
+        // Necessary to do some actions, if identity is recreated from MongoDB config.initialized has a value,
+        // else identity is initialized later
+        this.initialized = config.initialized || false;
+    
+        this.consume = this.consume.bind(this);
+    }
+}
+\end{lstlisting}
+
+Questo è il codice per inizializzare una identità uPort ed è richiamato dalla funzione da me creata \texttt{initializeUportId}
+
+\begin{lstlisting}[language=JavaScript]
+initializeIdentity(initDdo) {
+    if (!this.network)
+        return Promise.reject(new Error('No network configured'));
+
+    const IdentityManagerAddress = this.identityManagerAddress;
+
+    // Creates an object contract with a specific ABI 
+    // (Application Binary Interface, a low level API-like for contracts, 
+    // written in JSON as result of contract compilation)
+    // and at a specific address for the IdentityManager contract
+    const IdentityManager = Contract(IdentityManagerArtifact.abi).at(
+        IdentityManagerAddress
+    );
+
+    // Creates keypair and an ethereum address for the user and for recovery
+    this.initKeys();
+
+    // Calls contract function to create an Identity
+    const uri = IdentityManager.createIdentity(
+        this.deviceKeys.address,
+        this.recoveryKeys.address
+    );
+
+    // The consume function is a uport-js-client function which, given a URI which conforms to the uPort Protocol specs,
+    // parses it and, basing on the given URI format, sends a tx, adds an attestation or requests credentials.
+    return this.consume(uri)
+    .then(this.getReceipt.bind(this))
+    .then(receipt => {
+        const log = receipt.logs[0];
+
+        const createEventAbi = IdentityManager.abi.filter(
+            obj => obj.type === 'event' && obj.name === 'IdentityCreated'
+        )[0];
+
+        // Gets the Proxy contract address for the identity from
+        // the event emitted by the createIdentity function
+        this.id = decodeEvent(createEventAbi, log.data, log.topics).identity;
+
+        // Creates the MNID for the identity, which is the base58 encoding of the network id and the identity Proxy address
+        this.mnid = mnid.encode({ network: this.network.id, address: this.id });
+        this.initTransactionSigner(IdentityManagerAddress);
+
+        const baseDdo = {
+            '@context': 'http://schema.org',
+            '@type': 'Person',
+            publicKey: this.deviceKeys.publicKey
+        };
+
+        const ddo = Object.assign(baseDdo, initDdo);
+
+        // The code for the writeDDO is below, at a high level it uploads the ddo object to IPFS
+        // and adds it to the Registry smart contract
+        return this.writeDDO(ddo);
+    })
+    .then(this.ethjs.getTransactionReceipt.bind(this.ethjs))
+    .then(receipt => {
+        
+        this.initialized = true;
+        return;
+    });
+}
+
+writeDDO(newDdo) {
+    // Creates an object contract with a specific ABI 
+    // and at a specific address for the Registry contract
+    const Registry = Contract(RegistryArtifact.abi).at(this.network.registry);
+    return this.getDDO()
+      .then(ddo => {
+        // If the Identity Document already exists it doesn't overwrite with the given one,
+        // otherwise it adds to IPFS the newDdo
+        ddo = Object.assign(ddo || {}, newDdo);
+        return new Promise((resolve, reject) => {
+          this.ipfs.add(Buffer.from(JSON.stringify(ddo)), (err, result) => {
+            if (err) reject(new Error(err));
+            resolve(result);
+          });
+        });
+      })
+      .then(res => {
+        const hash = res[0].hash;
+        const hexhash = new Buffer(base58.decode(hash)).toString('hex');
+        // Removes Qm from ipfs hash, which specifies length and hash
+        const hashArg = `0x${hexhash.slice(4)}`;
+        const key = 'uPortProfileIPFS1220';
+
+        // Writes on the Registry contract the association between the Proxy contract address
+        // for the identity and the IPFS hash of its Identity Document which contains its pubkey
+        return Registry.set(key, this.id, hashArg);
+      })
+      .then(this.consume.bind(this));
+}
 \end{lstlisting}

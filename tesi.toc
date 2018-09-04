@@ -2,26 +2,25 @@
 \babel@toc {italian}{}
 \contentsline {chapter}{\numberline {1}Introduzione}{3}
 \contentsline {section}{\numberline {1.1}Ambito del progetto}{3}
-\contentsline {section}{\numberline {1.2}Descrizione dell'azienda}{4}
-\contentsline {section}{\numberline {1.3}Descrizione della tecnologia e motivazione della scelta di Ethereum}{5}
-\contentsline {subsection}{\numberline {1.3.1}Perch\IeC {\'e} Ethereum per BLINC?}{6}
-\contentsline {section}{\numberline {1.4}Architettura generale del progetto}{6}
-\contentsline {subsection}{\numberline {1.4.1}Architettura generale}{6}
-\contentsline {subsection}{\numberline {1.4.2}Soluzione tecnologica}{7}
-\contentsline {chapter}{\numberline {2}Identit\`a digitale}{9}
-\contentsline {section}{\numberline {2.1}Analisi dei requisiti}{9}
-\contentsline {section}{\numberline {2.2}Elenco dei prodotti e delle tecnologie disponibili}{10}
-\contentsline {section}{\numberline {2.3}Descrizione della tecnologia scelta e motivazione}{11}
-\contentsline {subsection}{\numberline {2.3.1}Perch\IeC {\'e} \IeC {\`e} stato scelto uPort?}{20}
-\contentsline {section}{\numberline {2.4}Integrazione all'interno del progetto BLINC}{20}
-\contentsline {subsection}{\numberline {2.4.1}Gestione di dichiarazioni ed endorsement}{20}
-\contentsline {subsection}{\numberline {2.4.2}Creazione di uPort Identity}{22}
-\contentsline {chapter}{\numberline {3}Conclusioni}{25}
-\contentsline {section}{\numberline {3.1}Problemi aperti}{25}
-\contentsline {subsection}{\numberline {3.1.1}Su Ethereum e blockchain in generale}{25}
-\contentsline {subsection}{\numberline {3.1.2}Su uPort}{25}
-\contentsline {subsection}{\numberline {3.1.3}Su BLINC}{25}
-\contentsline {section}{\numberline {3.2}Possibili scenari futuri}{26}
-\contentsline {subsection}{\numberline {3.2.1}Su Ethereum e blockchain in generale}{26}
-\contentsline {subsection}{\numberline {3.2.2}Su uPort}{26}
-\contentsline {subsection}{\numberline {3.2.3}Su BLINC}{26}
+\contentsline {section}{\numberline {1.2}Descrizione dell'azienda}{5}
+\contentsline {section}{\numberline {1.3}Descrizione della tecnologia e motivazione della scelta di Ethereum}{6}
+\contentsline {subsection}{\numberline {1.3.1}Perch\IeC {\'e} Ethereum per BLINC?}{7}
+\contentsline {section}{\numberline {1.4}Architettura generale del progetto}{8}
+\contentsline {subsection}{\numberline {1.4.1}Soluzione tecnologica}{9}
+\contentsline {chapter}{\numberline {2}Identit\`a digitale}{11}
+\contentsline {section}{\numberline {2.1}Analisi dei requisiti}{11}
+\contentsline {section}{\numberline {2.2}Elenco dei prodotti e delle tecnologie disponibili}{12}
+\contentsline {section}{\numberline {2.3}Descrizione della tecnologia scelta e motivazione}{13}
+\contentsline {subsection}{\numberline {2.3.1}Perch\IeC {\'e} \IeC {\`e} stato scelto uPort?}{25}
+\contentsline {section}{\numberline {2.4}Integrazione nel progetto BLINC}{25}
+\contentsline {subsection}{\numberline {2.4.1}Gestione di dichiarazioni ed endorsement}{26}
+\contentsline {subsection}{\numberline {2.4.2}Creazione di uPort Identity}{28}
+\contentsline {chapter}{\numberline {3}Conclusioni}{37}
+\contentsline {section}{\numberline {3.1}Problemi aperti}{37}
+\contentsline {subsection}{\numberline {3.1.1}Su Ethereum e blockchain in generale}{37}
+\contentsline {subsection}{\numberline {3.1.2}Su uPort}{37}
+\contentsline {subsection}{\numberline {3.1.3}Su BLINC}{38}
+\contentsline {section}{\numberline {3.2}Possibili scenari futuri}{38}
+\contentsline {subsection}{\numberline {3.2.1}Su Ethereum e blockchain in generale}{38}
+\contentsline {subsection}{\numberline {3.2.2}Su uPort}{38}
+\contentsline {subsection}{\numberline {3.2.3}Su BLINC}{39}
