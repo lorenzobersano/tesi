@@ -51,7 +51,8 @@ Il Gruppo Consoft ha focalizzato la propria offerta su alcune aree tematiche, pr
 delle quali è in grado di realizzare soluzioni “end to end” per i propri Clienti attraverso attività di consulenza, formazione, realizzazione di soluzioni
 integrate ed erogazione di servizi in insourcing/outsourcing.
 
-Ha ottenuto la Certificazione ISO 27001 ed ha un Sistema di Gestione Qualità certificato UNI EN ISO 9001:2008. Tra le aree di specializzazione tecnologica
+Ha ottenuto la Certificazione ISO 27001 ed ha un Sistema di Gestione Qualità certificato UNI EN ISO 9001:2008.
+Tra le aree di specializzazione tecnologica
 annovera DevOps e Testing, Analytics \& Big Data, Cyber Security e Internet of Things.
 
 Consoft Sistemi è parte del CDA del Cluster Tecnologie
@@ -59,19 +60,23 @@ per le Smart Cities \& Communities Lombardia, è membro di Assolombarda ed Assin
 (tramite CS\_InIT) ed attiva nei progetti di innovazione proposti dagli Enti.
 Ha fatto parte dell’Osservatorio Internet of things e Osservatorio Big Data del MIP, è membro IOTitaly.
 
-Consoft Sistemi come partner tecnologico collabora attivamente a progetti di ricerca sia regionali che nazionali ed europei con l’obiettivo di studiare
-e realizzare soluzioni che arricchiscano il mercato con ulteriori componenti ICT sviluppati a partire dalla realtà progettuale proposta,
+Consoft Sistemi come partner tecnologico collabora attivamente a progetti di ricerca sia regionali che nazionali
+ed europei con l’obiettivo di studiare e realizzare soluzioni che arricchiscano il mercato con ulteriori
+componenti ICT sviluppati a partire dalla realtà progettuale proposta,
 basati pertanto su un'esperienza che ne abbia già stimato il grado di fattibilità e sostenibilità economica.
 
 Le attività di R\&D inoltre, permettono di creare ulteriori contatti tra aziende di dimensioni diversificate, centri di ricerca,
 università ed operatori di settore per costruire un’offerta di servizi più completi e competitivi e per consentire l’utilizzo sinergico di risorse
 nell'ottica di un complessivo aumento di efficienza ed efficacia.
 
-L’Innovazione sociale attraverso il miglioramento della qualità della vita è tra i temi di maggiore interesse di Consoft Sistemi ed è in questo ambito
+L’Innovazione sociale attraverso il miglioramento della qualità della vita è tra i temi di maggiore interesse di Consoft
+Sistemi ed è in questo ambito
 che si colloca il progetto su cui è stato condotto e sviluppato il tirocinio.
 
 \section{Descrizione della tecnologia e motivazione della scelta di Ethereum}
-Data la necessità di avere un sistema sicuro e trasparente di caricamento e validazione di informazioni (documenti, certificati, contratti),
+
+Data la necessità di avere un sistema sicuro e trasparente di caricamento e validazione di informazioni
+(documenti, certificati, contratti),
 la blockchain è stata la scelta tecnologica più ovvia per BLINC.
 
 \begin{figure}[h!]
@@ -80,33 +85,42 @@ la blockchain è stata la scelta tecnologica più ovvia per BLINC.
     \label{fig:blockchain}
 \end{figure}
 
-La blockchain è una struttura dati funzionante come un registro elettronico che garantisce l’immutabilità e la permanenza delle informazioni salvate su di essa.
-Come suggerisce il nome, la blockchain è una catena di blocchi marcati temporalmente sempre crescente, nella quale ogni blocco contiene queste informazioni:
+La \textbf{blockchain} è una architettura di calcolo distribuito funzionante come un registro elettronico senza intermediari
+che garantisce l’immutabilità e la permanenza delle informazioni salvate su di essa.
+
+Come suggerisce il nome, la blockchain è una catena di blocchi marcati temporalmente sempre crescente,
+nella quale ogni blocco contiene queste informazioni:
 
 \begin{itemize}
     \item Un insieme di transazioni salvate in un Merkle Tree (un albero binario crittograficamente verificato)
-    \item L'hash del blocco precedente (nel caso di Ethereum e Bitcoin un hash SHA-256)
+    \item L'hash del blocco precedente (nel caso di Ethereum e Bitcoin viene utilizzato l'algoritmo di hashing SHA-256)
     \item Il momento in cui il blocco è stato aggiunto alla catena (sottoforma di timestamp UNIX)
     \item Un nonce, ovvero un numero unico che, inserito in una funzione di hash assieme al resto delle informazioni del blocco,
-    mi permette di ottenere un hash del blocco che è valido secondo dei requisiti (ad es. inizia con quattro zeri).
+    permette di ottenere un hash del blocco che è valido secondo dei requisiti (ad es. inizia con quattro zeri).
 \end{itemize}
 
-La sicurezza della blockchain è data dalle garanzie delle funzioni di hash: dato che l'header di ogni blocco contiene l'hash del blocco precedente,
-se un qualsiasi blocco venisse modificato, il suo hash cambierebbe, e quindi invaliderebbe il collegamente al blocco successivo. Bisognerebbe quindi
-andare a ricalcolare l'hash di ogni blocco successivo, ma data la dimensione attuale di una blockchain come Bitcoin sarebbe computazionalmente
-impossibile.
+La sicurezza della blockchain è data dalle garanzie delle funzioni di hash: dato che l'header di ogni blocco contiene
+l'hash del blocco precedente, se un qualsiasi blocco venisse modificato, il suo hash cambierebbe, e quindi invaliderebbe 
+il collegamente al blocco successivo. Bisognerebbe quindi andare a ricalcolare l'hash di ogni blocco successivo,
+ma data la dimensione attuale di una blockchain come Bitcoin e la difficoltà della rete
+ciò sarebbe computazionalmente quasi impossibile.
 
-La blockchain è nata con Bitcoin, sistema p2p per una valuta digitale creato da Satoshi Nakamoto basato su una blockchain distribuita e decentralizzata. 
+La blockchain è nata con Bitcoin, sistema peer-to-peer per una valuta digitale creato da Satoshi Nakamoto nel 2009
+basato su una blockchain distribuita e decentralizzata. 
 Distribuzione e decentralizzazione sono fondamentali perché rendono la blockchain di fatto incensurabile
-e senza un unico point-of-failure. Chiunque può unirsi alla rete Bitcoin: è sufficiente eseguire un client Bitcoin che crea un wallet, ovvero
+e senza un unico point-of-failure. Chiunque può unirsi alla rete Bitcoin: è sufficiente eseguire un client Bitcoin che gestisce un wallet, ovvero
 una chiave privata, una chiave pubblica ed un indirizzo Bitcoin, e connette il dispositivo su cui è installato come nodo della rete.
 
-Ethereum prende tutte le caratteristiche di Bitcoin e le amplia: rende la sua blockchain facilmente programmabile tramite smart contract.
-Uno smart contract è un programma scritto in un linguaggio di programmazione ad alto
-livello come Solidity (simil-JavaScript) o Vyper (simil-Python), compilato in bytecode e distribuito sulla blockchain tramite
-una transazione. 
+Ethereum prende tutte le caratteristiche di Bitcoin e le amplia, a partire dalla criptovaluta nativa del sistema, l'Ether.
+L'Ether, oltre a fungere da scambio di valore tra un utente della rete ed un altro, serve anche a pagare il gas, ovvero la tassa
+introdotta per evitare lo spam di transazioni sulla rete, necessario per inviare transazioni che possono anche non avere valore,
+ma possono ad esempio eseguire del codice.
+
+Ethereum infatti rende la sua blockchain facilmente programmabile tramite \textbf{smart contract}, ovvero programmi scritti
+in un linguaggio di programmazione ad alto livello come Solidity (simil-JavaScript) o Vyper (simil-Python),
+compilati in bytecode e distribuiti sulla blockchain tramite transazioni. 
 Gli smart contract sono eseguiti in un ambiente isolato ed indipendente (e quindi più sicuro)
-chiamato Smart Contract Execution Engine, che nel caso di Ethereum prende il nome di EVM (Ethereum Virtual Machine).
+chiamato \textbf{Smart Contract Execution Engine}, che nel caso di Ethereum prende il nome di EVM (Ethereum Virtual Machine).
 Esattamente come in ogni blockchain distribuita e decentralizzata ogni nodo della rete possiede una copia della blockchain stessa
 (e quindi ogni transazione), in Ethereum ogni nodo esegue il codice degli smart contract: questa replicazione rende molto lenta
 l’esecuzione delle istruzioni, ma permette lo sviluppo di applicazioni che necessitano di trasparenza, sicurezza ed immutabilità.
@@ -161,22 +175,23 @@ L’architettura è composta da (da sinistra a destra, dall’alto in basso):
     \label{fig:soluzionetecnologica}
 \end{figure}
 
-Data l’immaturità del SDK di uPort che non ha permesso il mantenimento del wallet del migrante sul proprio telefono, la prima versione 
-dell’architettura e di flusso di accesso ai servizi include elementi provvisori come l’OAuth server (basato su login tramite e-mail e password e centralizzato, 
+Data l’immaturità del SDK di uPort che non ha permesso la creazione del wallet del migrante sul proprio telefono, la prima versione 
+dell’architettura e di flusso di accesso ai servizi include elementi provvisori come l’OAuth server
+(basato su login tramite e-mail e password e centralizzato, 
 entrambe cose che si vorrebbero evitare) e il MongoDB (che contiene i wallet degli utenti criptati).	
 In questa prima versione il flusso d’interazione base è quindi questo:
 
-\textbf{Utente registrato}
+\subsubsection{Utente registrato}
 
-\begin{enumerate}
-    \item L’utente apre l’applicazione di BLINC, inserisce e-mail/nome utente e password che vengono inviati all’OAuth server:
-    se e-mail/nome utente esistono e la password associata è corretta viene restituito un token di autorizzazione tramite il quale l’utente
-    potrà accedere alle API protette del backend.
-    \item Grazie al token ricevuto, l’utente può accedere innanzitutto alla propria identità uPort, salvata su database, 
-    per caricare documenti e verificare attestazioni sulle proprie credenziali e sui propri documenti.
-\end{enumerate}
+L’utente apre l’applicazione di BLINC, inserisce e-mail/nome utente e password che vengono inviati all’OAuth server:
+se e-mail/nome utente esistono e la password associata è corretta viene restituito un token di autorizzazione tramite il quale l’utente
+potrà accedere alle API protette del backend.
 
-\textbf{Utente non registrato}
+Grazie al token ricevuto, l’utente può accedere innanzitutto alla propria identità uPort, salvata su database, 
+per caricare documenti e verificare attestazioni sulle proprie credenziali e sui propri documenti.
+
+
+\subsubsection{Utente non registrato}
 
 Al primo accesso all’app BLINC il migrante inserisce informazioni base (nome, cognome, telefono…),
 la propria e-mail ed una password. Queste ultime vengono salvate sull’OAuth server per i login successivi, 

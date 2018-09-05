@@ -1,9 +1,10 @@
-\chapter{Identit\`a digitale}
+\chapter{Identità digitale}
 
 \section{Analisi dei requisiti}
-Come da requisiti, l’obbiettivo principale di BLINC è quello di creare un portadocumenti digitale decentralizzato
+Come da requisiti, l’obbiettivo principale di BLINC è quello di creare un portadocumenti digitale
 i cui documenti inseriti rimangono sotto il controllo del proprietario.
-Quest’ultimo requisito introduce il concetto di \textbf{sovranità del dato} (o self-sovereign identity), ovvero il totale
+
+Questo requisito introduce il concetto di \textbf{sovranità del dato} (o self-sovereign identity), ovvero il totale
 controllo della propria identità digitale senza dover dipendere da terzi come Facebook o SPID per la Pubblica Amministrazione.
 
 La self-sovereign identity è soltanto l’ultima di una serie di evoluzioni che la gestione dell’identità digitale
@@ -18,7 +19,7 @@ di questo modello.
 
 La self-sovereign identity non sarebbe mai stata possibile con i tradizionali sistemi di Identity Providing
 centralizzati, ma con l’avvento della blockchain si è finalmente potuto iniziare ad esplorare soluzioni di sovranità
-del dato grazie soprattutto a due importanti proprietà: la pseudonimizzazione e la decentralizzazione.
+del dato grazie soprattutto a due importanti proprietà: la \textbf{pseudonimizzazione} e la \textbf{decentralizzazione}.
 
 La prima è fondamentale anche in ottica GDPR ed è data dall’intrinseca capacità della blockchain di mantenere 
 riferimenti ad informazioni tramite il loro hash, la seconda è importante in quanto un 
@@ -32,19 +33,21 @@ valutate le seguenti:
 \begin{itemize}
   \item \textbf{uPort}:
   Sviluppato sotto l’egida di ConsenSys, uPort è un sistema per la self-sovereign identity basato su Ethereum. 
+
   \item \textbf{Civic}:
-  Sviluppato dall’omonima azienda, Civic è una piattaforma composta da smart contract ed un token per lo scambio
+
+  Civic è una piattaforma composta da smart contract ed un token per lo scambio
   di valore basata su Rootstock, una side-chain di Bitcoin che permette l’esecuzione di smart contract.
+
   Civic fornisce una piattaforma sicura di self-sovereign identity accessibile dagli utenti tramite
   la loro app, che funge da wallet per l’identità.
   Civic ed i suoi identity partner possono fare una richiesta di credenziali all’utente, che può 
   accettare o respingere, tramite un codice QR.
-  Nel sistema Civic ci sono tre diversi soggetti: i Validatori, ovvero istituzioni finanziarie,
-  entità governative e aziende che hanno la possibilità
+  Nel sistema Civic i\emph{Validatori}, ovvero istituzioni finanziarie, entità governative e aziende che hanno la possibilità
   di validare l’identità di singoli o di altre aziende che prendono parte al sistema
-  Civic come Utenti tramite delle transazioni di approvazione sulla blockchain chiamate attestazioni.
+  Civic come \emph{Utenti} tramite delle transazioni di approvazione sulla blockchain chiamate attestazioni.
   Una attestazione è in pratica l’hash di un’informazione dell’identità più metadati relativi ad essa
-  utilizzabile dai Fornitori di servizi per erogare servizi agli utenti abilitati. I fornitori di servizi possono
+  utilizzabile dai \emph{Fornitori di servizi} per erogare servizi agli utenti abilitati. I fornitori di servizi possono
   acquistare le attestazioni ai validatori tramite smart contract pagando con i token del sistema Civic.
 
   \begin{figure}[!ht]
@@ -54,6 +57,7 @@ valutate le seguenti:
   \end{figure}
 
   \item \textbf{SelfKey}:
+
   Sviluppato dalla SelfKey Foundation, SelfKey è un sistema basato su Blockchain Ethereum composto
   da un wallet personale per il possessore dell’identità, un marketplace di prodotti e servizi,
   un protocollo basato su JSON-LD ed un token per scambiare valore.
@@ -64,29 +68,34 @@ valutate le seguenti:
   la quantità di dati condivisi alle terze parti allo stretto indispensabile.
   
   \begin{figure}[!ht]
-    \includegraphics[scale=0.5]{selfkey}
+    \includegraphics[width=\linewidth]{selfkey}
     \caption{Diagramma di funzionamento di SelfKey.}
     \label{fig:selfkey}
   \end{figure}
 \end{itemize}
 
 \section{Descrizione della tecnologia scelta e motivazione}
-uPort è un insieme di protocolli, librerie e smart contract che creano uno strato interoperabile di identità, che possono aggiungere, togliere e verificare attributi ed attestazioni a sé stesse ed alle altre identità.
+
+uPort è un insieme di protocolli, librerie e smart contract che creano uno strato interoperabile di identità,
+che possono aggiungere, togliere e verificare attributi ed attestazioni a sé stesse ed alle altre identità.
 
 Un’identità in uPort è formata da:
 
 \begin{itemize}
   \item Un \textbf{MNID} (Multi Network IDentifier), che è un oggetto JSON codificato in base58 formato da un campo network, ovvero l’ID della chain Ethereum su cui si trova l’account
   (ad esempio 0x1 per la mainnet) e un campo address il cui valore è un indirizzo Ethereum.
-  \item Una chiave privata necessaria per firmare transazioni da inviare alla blockchain
-  \item Una chiave pubblica inserita nel proprio DID Document salvato su IPFS e sullo smart contract Registry
+  \item Una chiave privata necessaria per firmare transazioni da inviare alla blockchain.
+  \item Una chiave pubblica inserita nel proprio DID Document (un oggetto JSON) salvato su IPFS e sullo smart contract Registry.
 \end{itemize}
 
 uPort prevede la gestione di dati sia off-chain che on-chain. 
+
+\subsection{uPort on-chain: smart contract per l'identità}
+
 Per quanto riguarda la parte on-chain uPort prevede un insieme di smart contract per la gestione delle identità che sono:
 
 \begin{itemize}
-  \item \textbf{Proxy}: uno per ogni identità, funge da rappresentante on-chain di essa. Ogni transazione che viene fatta
+  \item \texttt{Proxy}: uno per ogni identità, funge da rappresentante on-chain di essa. Ogni transazione che viene fatta
   sulla blockchain viene fatta dallo smart contract Proxy e non direttamente dal wallet dell’identità, permettendo
   di conseguenza di mantenere il possesso della propria identità digitale anche nel caso di smarrimento del 
   device su cui è installato il wallet uPort.
@@ -117,7 +126,7 @@ contract Proxy is Owned {
     }
 }
   \end{lstlisting}
-  \item \textbf{IdentityManager}: uno per chain, funge da Factory degli smart contract Proxy e ne tiene traccia,
+  \item \texttt{IdentityManager}: uno per chain, funge da Factory degli smart contract Proxy e ne tiene traccia,
   associando, oltre all’identità vera e propria associata al Proxy, altre identità fidate che permettono
   il recupero del possesso del proprio contract Proxy in caso di smarrimento del wallet.
 
@@ -366,7 +375,7 @@ contract UportRegistry{
 }
   \end{lstlisting}
 
-  \item \textbf{EthereumClaimsRegistry}: uno per chain, serve per aggiungere dichiarazioni ed attestazioni alle identità.
+  \item \texttt{EthereumClaimsRegistry}: uno per chain, serve per aggiungere dichiarazioni ed attestazioni alle identità.
   
   \begin{lstlisting}[language=Solidity]
 //EthereumClaimsRegistry.sol
@@ -431,6 +440,7 @@ contract EthereumClaimsRegistry {
   \end{lstlisting}
 \end{itemize}
 
+\subsection{uPort off-chain: JWT per lo scambio di informazioni}
 
 Per quanto riguarda invece le interazioni off-chain uPort utilizza JWT (JSON Web Token)
 firmati, che possono essere utilizzati per:
@@ -439,8 +449,9 @@ firmati, che possono essere utilizzati per:
   \item Inviare/ricevere attestazioni a/da altre identità uPort
 \end{itemize}
 
-I JWT sono una maniera standardizzata dalla RFC per scambiare informazioni
+I \textbf{JWT} sono una maniera standardizzata dalla RFC per scambiare informazioni
 tra parti sotto forma di oggetto JSON firmato ed eventualmente criptato.
+
 Sono utilizzati principalmente in due ambiti:
 \begin{enumerate}
   \item \textbf{Autorizzazione}: una volta che un utente ha acceduto ad un sito/servizio,
@@ -450,23 +461,28 @@ Sono utilizzati principalmente in due ambiti:
   un JWT è particolarmente indicato per scambiare informazioni per due motivi:
   è un formato di dimensioni ridotte adatto ad essere aggiunto ad un URL
   ed essendo un oggetto JSON firmato si ha la sicurezza che le informazioni ricevute
-  sono quelle inviati inizialmente e che non sono state modificate nel frattempo.
+  siano quelle inviate inizialmente e che non siano state modificate nel frattempo.
 \end{enumerate}
 
 uPort, come tutte le soluzioni di self-sovereign identity, inverte totalmente
 il paradigma dell’identità online:
 se prima erano i siti web e servizi su cui ci si registrava ad avere sotto controllo
-tutte le nostre informazioni, avendo quindi la possibilità di rivenderle al miglior
-offerente per scopi pubblicitari od altro, con uPort l’identità e le informazioni
-associate ad essa sono totalmente sotto il controllo del proprietario dell’identità
-e sono le terze parti a dover richiedere la informazioni necessarie all’utente,
+tutte le nostre informazioni, avendo quindi la possibilità di utilizzarle per scopi pubblicitari od altro,
+con uPort l’identità e le informazioni associate ad essa sono totalmente sotto il controllo del
+proprietario dell’identità e sono le terze parti a dover richiedere la informazioni necessarie all’utente,
 che di conseguenza ha anche un maggiore controllo su quali e quante informazioni fornisce.
 
 Questo processo di rilascio di informazioni personali a terzi in uPort si chiama \textbf{Selective Disclosure Flow}, e segue questo flusso:
 
-\includegraphics[scale=0.8]{selectivedisclosure}
+\newpage
 
-La Selective Disclosure Request fatta dal servizio che richiede le credenziali
+\begin{figure}[!ht]
+    \includegraphics[width=\linewidth]{selectivedisclosure}
+    \caption{Diagramma di sequenza per la richiesta di informazioni ad un utente uPort.}
+    \label{fig:selectivedisclosure}
+\end{figure}
+
+La \textbf{Selective Disclosure Request} fatta dal servizio che richiede le credenziali
 all’utente non è altro che un JWT che segue uno schema ben formato inviato ad un
 opportuno endpoint gestito da uPort. Una volta che la richiesta è arrivata al server
 Chasqui (che gestisce lo scambio di JWT tra app uPort e normali web app o DApp)
@@ -479,22 +495,33 @@ attestate, ad esempio un servizio di e-ticketing potrebbe
 richiedere nome e cognome dell’acquirente per attestare che
 quell’identità ha effettivamente acquistato un biglietto. Per questo motivo
 in congiunzione al flusso di richiesta di informazioni uPort prevede il
-Send Verification Flow, ovvero il processo di attestazione di attributi
+\textbf{Send Verification Flow}, ovvero il processo di attestazione di attributi
 e credenziali dell’identità.
 
-\includegraphics{verifiedclaim}
+\newpage
+
+\begin{figure}[!ht]
+    \includegraphics{verifiedclaim}
+    \caption{Diagramma di sequenza per l'aggiunta di dichiarazioni su un'identità uPort.}
+    \label{fig:verifiedclaim}
+\end{figure}
 
 Il Verified Claim creato dall’issuer (che è l’identità uPort che ha creato l’attestazione)
 è un JWT che segue uno schema ben formato inviato allo stesso server Chasqui citato
 in precedenza e segue un flusso molto simile a quello della richiesta di credenziali.
 
 \subsection{Perché è stato scelto uPort?}
-Tra tutte le alternative disponibili è stato scelto uPort perché tra tutti i sistemi
-di gestione dell’identità digitale e di sovranità del dato è quello con un grado di
-maturità e supporto di sviluppatori e community maggiore. 
-Inoltre, il fatto che sia costruito su Ethereum rende semplice l’interoperabilità
-con smart contract sviluppati esternamente a uPort come ad esempio, nel caso di BLINC,
-quello di gestione dei documenti dei migranti.
+
+Tra le tre opzioni esplorate si è deciso di adottare uPort per i seguenti motivi:
+
+\begin{itemize}
+    \item Basato su piattaforma Ethereum: per motivi di facilità di sviluppo e di deploy di blockchain privata è stato scelto
+    Ethereum per BLINC, quindi Civic, basato su Rootstock, è stato scartato per questo motivo.
+    \item Semplice e interoperabile con altri smart contract: uPort è un semplice layer di identità basato su 
+    smart contract Ethereum senza servizi o token aggiuntivi, motivo per cui è stato preferito a SelfKey.
+    \item Grado di maturità: tra le tre opzioni esplorate, uPort è quello in stato più avanzato di sviluppo e ha il miglior supporto
+    sia dal team di sviluppo che dalla community.
+\end{itemize}
 
 \section{Integrazione nel progetto BLINC}
 
@@ -592,6 +619,8 @@ Declaration.addDeclaration = (issuer, subject, key, value, cb) => {
 };
 \end{lstlisting}
 
+\newpage
+
 \subsection{Creazione di uPort Identity}
 
 Si segue questo flusso ogni volta che un nuovo utente si iscrive alla piattaforma:
@@ -600,13 +629,13 @@ Si segue questo flusso ogni volta che un nuovo utente si iscrive alla piattaform
     \includegraphics[width=\linewidth]{createidentities}
     \caption{Flusso di creazione di identità.}
     \label{fig:createidentities}
-  \end{figure}
+\end{figure}
 
 Durante la registrazione viene istanziato sulla blockchain Ethereum privata 
 lo smart contract Proxy associato all’utente e vengono salvate su database le credenziali
 dell’utente (nome, cognome…) e gli si associa un wallet che viene poi criptato. A questo punto
 ad ogni login dell’utente viene deserializzata l’identità uPort
-ad esso associata ed il wallet, in modo da poter interagire con la chain.
+ad esso associata ed il wallet, in modo da poter interagire con la blockchain.
 
 \textbf{Implementazione}
 
@@ -681,7 +710,7 @@ Migrant.getMigrant = (email, password, cb) => {
 };
 \end{lstlisting}
 
-Le funzioni \texttt{createUportId} e \texttt{initializeUportId} fanno parte di una piccola libreria scritta da me che funge da middleware tra
+Le funzioni \texttt{createUportId} e \texttt{initializeUportId} fanno parte di una libreria scritta da me che funge da middleware tra
 la business logic raggiungibile tramite chiamate API e la libreria \texttt{uport-js-client} (modificata ampiamente per i requisiti di BLINC),
 che simula il funzionamento dei protocolli uPort. Qui il codice delle due funzioni:
 
@@ -696,10 +725,14 @@ const createUportId = (info = {}) => {
   return new Promise(async (resolve, reject) => {
     try {
       const uportClient = new UPortClient(config, { info });
+      
       // Creates a keypair for the uPort client
       uportClient.initKeys();
 
       const accounts = await web3.eth.getAccounts();
+
+      // Gets the first Ethereum account in the private blockchain which is the one who is mining hence
+      // the one with funds  
       const miner = accounts[0];
 
       const fundTx = {

@@ -4,56 +4,180 @@
 
 \subsection{Su Ethereum e blockchain in generale}
 
-\textbf{Scalabilità}
-Eseguire calcoli su una blockchain è troppo lento e costoso, quindi salvare e fare calcoli
-su grandi quantità di dati non è fattibile. Per fare un confronto, il circuito VISA processa circa 10.000 transazioni al secondo,
+\subsubsection{Scalabilità}
+Eseguire calcoli e salvare molti dati su una blockchain è troppo lento e costoso. 
+
+Per quanto riguarda il salvataggio di moli di dati
+importanti si ha una soluzione che consiste nel memorizzare soltanto i riferimenti crittografici
+ai dati che sono poi salvati su altri tipi
+di storage decentralizzato, come IPFS o Swarm.
+
+Per quanto riguarda invece la velocità di processamento delle transazioni, per fare un confronto,
+il circuito VISA processa circa 10.000 transazioni al secondo,
 Ethereum ne processa al massimo 15 al secondo, con grandi problemi quando
 la rete è molto utilizzata (come nel dicembre 2017 con il fenomeno CryptoKitties)
 che causano ritardo nel processamento di transazioni e aumento del costo del gas.
 
-\textbf{Privacy}
-I dati su una blockchain sono accessibili da tutti, rendendo impossibile il salvataggio e la computazione di dati sensibili.
-Ciò restringe il numero di applicazioni possibili per la blockchain.
+\subsubsection{Privacy}
+
+La blockchain garantisce immutabilità, correttezza e trasparenza dei dati e delle computazioni:
+se le prime due proprietà sono ben accette in tutti i casi in cui la blockchain è un valore aggiunto,
+l'ultima è più una criticità che un punto di forza in molte applicazioni
+che hanno a che fare con dati sensibili, come ad esempio applicazioni sanitarie.
 
 \subsection{Su uPort}
 
-\textbf{SDK per mobile}
+\subsubsection{SDK per mobile}
 
-Al momento della scrittura di questa sezione non è ancora disponibile un SDK maturo
-per l’utilizzo dei protocolli di uPort su applicazioni native Android e iOS.
+Al momento sono in fase di sviluppo SDK sia per Android che per iOS, ma al momento in cui si doveva 
+implementare una prima versione dell'architettura di BLINC non erano abbastanza mature per le nostre necessità (
+non permettevano ad esempio di poter interagire con una rete Ethereum privata ma soltanto con le testnet pubbliche)
+e soprattutto non era ancora disponibile l'SDK iOS, una tegola insormontabile per il progetto in quanto è necessario
+sviluppare una app per entrambi i maggiori sistemi operativi mobile.
 
-\textbf{Parziale centralizzazione}
+\subsubsection{Parziale centralizzazione}
 
-Al momento uPort utilizza ancora dei microservizi per rendere possibili alcune parti fondamentali
-dell’architettura come ad esempio il server di messaging Chasqui o il server che finanzia le transazioni Sensui,
-non è sono ancora decentralizzati in mancanza di alternative solide ai modelli centralizzati.
+Al momento uPort utilizza ancora dei microservizi centralizzati per rendere possibili alcune parti fondamentali
+dell’architettura come il server di messaging Chasqui o il server che finanzia le transazioni Sensui.
 
 \subsection{Su BLINC}
 
-\textbf{Centralizzazione}
+\subsubsection{Centralizzazione}
 
 A causa delle scadenze non rispettate dal team di uPort per quanto riguarda le SDK mobile e delle scadenze
 che il team di BLINC doveva rispettare è stato necessario spostare il wallet degli utenti su un server centrale
 invece che mantenerlo sul device dei migranti. Questo va parzialmente contro i principi di decentralizzazione
 e sovranità del dato che caratterizzano la blockchain ed il progetto uPort.
 
+\subsubsection{Utilizzo di librerie e protocolli uPort datati o deprecati}
+
+Dato che nella prima versione di BLINC non è stato possibile spostare il wallet degli utenti sul loro telefono
+a causa dell'immaturità degli SDK mobile,
+è stato necessario spostare la gestione dell'identità sul server.
+
+Questa necessità, oltre a quella di dover creare le identità su una blockchain privata, ha precluso l'utilizzo di molte
+librerie (che erano anche quelle più supportate) di uPort, portandomi di fatto a dover utilizzare l'unica che soddisfacesse
+i nostri requisiti, ovvero la \texttt{uport-js-client} già citata in precedenza.
+
+Usando la libreria sono stati però riscontrati diversi problemi:
+
+\begin{itemize}
+  \item Errori strutturali e sintattici del codice: utilizzo di alcune variabili non dichiarate
+  e errori nell'esecuzione di alcune funzioni.
+  \item Utilizzo di URI deprecati: gli URI di richiesta di informazioni o di creazione di attestazioni utilizzati nella libreria erano
+  diversi da quelli specificati nella documentazione di uPort e deprecati da tempo.
+  \item La memorizzazione delle attestazioni non veniva fatta \emph{on chain}: questo è il codice originale di \texttt{uport-js-client}
+
+  \begin{lstlisting}[language=JavaScript]
+addAttestationRequestHandler(uri) {
+  const params = getUrlParams(uri)
+
+  // Gets the JWT from the URI
+  const attestations = Array.isArray(params.attestations) ? params.attestations : [params.attestations]
+
+  for (let jwt in attestations) {
+    jwt = attestations[jwt]
+
+    // Decodes the JWT passed in the URI and gets the payload part
+    const json = decodeToken(jwt).payload
+    const key = Object.keys(json.claim)[0]
+
+    if (this.network) {
+      this.verifyJWT(jwt).then(() => {
+
+        // This just adds attestations to the UportClient object, while we want attestations to be stored on the blockchain
+        this.credentials[key] ? this.credentials[key].append({jwt, json}) : this.credentials[key] = [{jwt, json}]
+      }).catch(console.log)
+    }
+  }
+}
+  \end{lstlisting}
+
+  La versione da me modificata per l'inserimento di attestazioni 
+  
+  sull'\texttt{EthereumClaimsRegistry} della stessa funzione è la seguente: 
+
+  \begin{lstlisting}[language=JavaScript]
+async addAttestationRequestHandler(uri) {
+
+  // Creates an object contract with a specific ABI 
+  // and at a specific address for the EthereumClaimsRegistry contract
+  const ClaimsReg = Contract(EthereumClaimsRegistryArtifact.abi).at(
+    this.network.claimsRegistry
+  );
+
+  const params = getUrlParams(uri);
+  const attestations = Array.isArray(params.attestations)
+    ? params.attestations
+    : [params.attestations];
+
+  let i = 0;
+
+  return Promise.all(
+
+    // This method also adds the possibility to add more than one attestation a time
+    attestations.map(async (jwt, i) => {
+      const json = decodeToken(jwt).payload;
+      const issAddress = json.iss;
+      const subAddress = json.sub;
+      const key = Object.keys(json.claim)[i];
+      const value = Object.values(json.claim)[i];
+
+      // Creates the transaction URI that will be given to the consume function
+      // which will call send a transaction to the EthereumClaimsRegistry contract on the private blockchain
+      // with the parameters passed in the JWT
+      const tx = ClaimsReg.setClaim(subAddress, key, value);
+
+      try {
+        const txHash = await this.consume(tx);
+        const receipt = await this.getReceipt(txHash);
+        const log = receipt.logs[0];
+
+        const claimSetEventAbi = ClaimsReg.abi.filter(
+          obj => obj.type === 'event' && obj.name === 'ClaimSet'
+        )[0];
+
+
+        // Gets the ClaimSet event emitted by the setClaim function, to give feedback to the NodeJS backend
+        // that the claims were correctly set
+        const decodedEvent = decodeEvent(
+          claimSetEventAbi,
+          log.data,
+          log.topics
+        );
+
+        // Returns an object which is added to the response array
+        return {
+          key: ethutil.toUtf8(decodedEvent.key),
+          value: ethutil.toUtf8(decodedEvent.value),
+          issuer: decodedEvent.issuer,
+          sub: decodedEvent.subject
+        };
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    })
+  );
+}
+  \end{lstlisting}
+\end{itemize}
+
 \section{Possibili scenari futuri}
 
 \subsection{Su Ethereum e blockchain in generale}
 
-\textbf{Scalabilità}
+\subsubsection{Scalabilità}
 
 Sono in diverse fasi di sviluppo (alcune in fasi embrionali, altre già oltre il MVP)
 alcune possibili soluzioni per risolvere i problemi di scalabilità di Ethereum.
 
 \begin{itemize}
-  \item Raiden
-  \item Plasma
-  \item Casper
-  \item Sharding
+  \item Raiden (state channels)
+  \item Plasma (side-chains)
+  \item Casper (Proof-of-Stake) + Sharding
 \end{itemize}
 
-\textbf{Privacy}
+\subsubsection{Privacy}
 
 Diverse startup ed aziende stanno lavorando per rendere possibile la computazione
 e il salvataggio di dati privati, tra cui Keep ed Enigma: la prima avvalendosi di contenitori
@@ -61,33 +185,34 @@ off-chain di dati privati e la seconda tramite l’uso di smart contract privati
 
 \subsection{Su uPort}
 
-\textbf{SDK mobile}
+\subsubsection{SDK mobile}
+
 Lo sviluppo delle SDK procede come si vede sui repository GitHub di uPort,
 quindi si raggiungerà il livello di maturazione necessario a decentralizzare
 l’architettura di BLINC in relativamente poco tempo.
 
-\textbf{Rivoluzione dell'architettura di uPort}
+\subsubsection{Rivoluzione dell'architettura di uPort}
+
 L’architettura uPort cambierà radicalmente di qui a poco, passando da un’astrazione
 dell’identità basata su smart contract sviluppati internamente in uPort ad una architettura
 basata sugli standard proposti dalla Decentralized Identity Foundation.
 A differenza dell’attuale architettura dove la creazione di un’identità richiede
-due transazioni (deploy del contratto Proxy tramite chiamata allo smart contract  IdentityManager
+due transazioni (deploy del contratto Proxy tramite chiamata allo smart contract IdentityManager
 e registrazione dell’Identity Document su smart contract Registry), la registrazione
-di un’identità nella nuova architettura richiede soltanto
+di un’identità nella nuova architettura richiederà soltanto
 la creazione di un account Ethereum, ed è quindi gratuita.
-
 
 \subsection{Su BLINC}
 
-\textbf{Spostamento del wallet su telefono}
+\subsubsection{Spostamento del wallet su telefono}
 
 Una volta che saranno rilasciate le SDK mobile di uPort si procederà a decentralizzare
 l’architettura, spostando i wallet degli utenti da MongoDB al loro smartphone e di fatto
 rimuovendo la necessità di avere un backend centralizzato.
 
-\textbf{Salvataggio degli attributi delle uPort Identity su Identity Hub}
+\subsubsection{Salvataggio degli attributi delle uPort Identity su Identity Hub}
 
-Invece di salvare gli attributi delle identità su MongoDB, l’attuale soluzione provvisoria
+Invece di salvare gli attributi privati e non delle identità su MongoDB, l’attuale soluzione provvisoria
 e centralizzata, si passerà all’utilizzo di Identity Hub che sono, come descritto
 sul repository GitHub della Decentralized Identity Foundation, dei datastore che contengono
 oggetti significativi per l’identità in locazioni conosciute. Ogni oggetto in un Hub è firmato

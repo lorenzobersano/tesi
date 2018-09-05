@@ -2,3 +2,6 @@ __latexindent_temp.tex
 tesi.synctex.gz
 *.fls
 *.log
+*.aux
+*.fdb_latexmk
+*.toc
