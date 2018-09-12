@@ -537,7 +537,6 @@ opportuno endpoint gestito da uPort.
 
 \begin{table}[htbp]
     \centering
-    \caption{Campi di una Selective Disclosure Request}
       \begin{tabular}{p{6.165em}p{19.89em}p{6.335em}}
       \toprule
       \textbf{Nome} & \textbf{Descrizione} & \textbf{Obbligatorio} \\
@@ -564,7 +563,6 @@ opportuno endpoint gestito da uPort.
       \midrule
       \texttt{boxPub} & Chiave pubblica del'identità richiedente, usata per criptare i messaggi inviati all'URL di callback & No \\
       \midrule
-      \newpage
       \texttt{issc} & Le dichiarazioni auto firmate dal \texttt{iss} di questo messaggio, sia come oggetto di tipi di dichiarazioni
       per le dichiarazioni autofirmate oppure l'hash IPFS dell'oggetto equivalente. & No \\
       \midrule
@@ -573,6 +571,7 @@ opportuno endpoint gestito da uPort.
       \bottomrule
       \end{tabular}%
     \label{tab:selectivedisclosurerequest}%
+    \caption{Campi di una Selective Disclosure Request}
   \end{table}%
 
 Una volta che la richiesta è arrivata al server
@@ -597,9 +596,38 @@ e credenziali dell’identità.
     \label{fig:verifiedclaim}
 \end{figure}
 
-Il Verified Claim creato dall’issuer (che è l’identità uPort che ha creato l’attestazione)
+Il \textbf{Verified Claim} creato dall’issuer (che è l’identità uPort che ha creato l’attestazione)
 è un JWT che segue uno schema ben formato inviato allo stesso server Chasqui citato
 in precedenza e segue un flusso molto simile a quello della richiesta di credenziali.
+
+\newpage
+
+\begin{table}[htbp]
+    \centering
+      \begin{tabular}{p{6.165em}p{19.89em}p{6.335em}}
+      \toprule
+      \textbf{Nome} & \textbf{Descrizione} & \textbf{Obbligatorio} \\
+      \midrule
+      \texttt{iss} & Il DID dell’identità firmataria & Sì \\
+      \midrule
+      \texttt{sub} & Il DID dell’identità interessata & Sì \\
+      \midrule
+      \texttt{type} & Il tipo di attestazione & No \\
+      \midrule
+      \texttt{exp} & Momento di scadenza della dichiarazione & Sì \\
+      \midrule
+      \texttt{claim} & Un oggetto contenente una o più dichiarazioni riguardanti \texttt{sub} & No \\
+      \midrule
+      \texttt{issc} & Le dichiarazioni auto firmate dal \texttt{iss} di questo messaggio, sia come oggetto di tipi di dichiarazioni
+      per le dichiarazioni autofirmate oppure l'hash IPFS dell'oggetto equivalente. & No \\
+      \midrule
+      \texttt{vc} & Un vettore di dichiarazioni verificate (JWT) o l'hash IPFS dell'oggetto equivalente riguardanti
+      il \texttt{iss} del messaggio  & No \\
+      \bottomrule
+      \end{tabular}%
+    \label{tab:verifiedclaim}%
+    \caption{Campi di un Verified Claim}
+  \end{table}%
 
 \subsection{Perché è stato scelto uPort?}
 
