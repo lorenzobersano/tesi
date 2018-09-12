@@ -449,6 +449,8 @@ firmati, che possono essere utilizzati per:
   \item Inviare/ricevere attestazioni a/da altre identità uPort
 \end{itemize}
 
+\subsection{JSON Web Token}
+
 I \textbf{JWT} sono una maniera standardizzata dalla RFC per scambiare informazioni
 tra parti sotto forma di oggetto JSON firmato ed eventualmente criptato.
 
@@ -464,15 +466,62 @@ Sono utilizzati principalmente in due ambiti:
   siano quelle inviate inizialmente e che non siano state modificate nel frattempo.
 \end{enumerate}
 
+\subsubsection{Formato di un JWT}
+
+Un esempio di JWT codificato è questo:
+
+\begin{figure}[!ht]
+    \includegraphics[width=\linewidth]{jwt}
+    \caption{Esempio di JWT codificato.}
+    \label{fig:jwt}
+\end{figure}
+
+Come si vede un JWT è diviso in tre parti separate dai punti:
+
+\begin{itemize}
+    \definecolor{headerColor}{RGB}{251, 1, 91}
+    \definecolor{payloadColor}{RGB}{214, 58, 255}
+    \definecolor{signatureColor}{RGB}{0, 185, 241}
+    \item {\color{headerColor} Header}: un oggetto JSON codificato in Base64
+    composto dal tipo di token (JWT) e dall'algoritmo di hash 
+    usato, nel caso in foto HMAC SHA256
+    \item {\color{payloadColor} Payload}: un oggetto JSON codificato in base64
+    che contiene le dichiarazioni
+    che vengono fatte su un soggetto, nel caso di uPort su un'identità, e le informazioni
+    su quella dichiarazione, ad esempio:
+
+    \begin{lstlisting}
+{
+    "key": "CartaDiIdentita",
+    "value": "hashIPFSdellacartadiidentita"
+}
+    \end{lstlisting}
+    \item {\color{signatureColor} Signature}: un hash dell'Header codificato in base64,
+    un ".", Payload codificato in base64 e un secret.
+\end{itemize}
+
+Come si deduce dall'immagine sopra, i JWT permettono di inviare 
+molte informazioni in un formato molto ristretto, adatto quindi ad essere incluso in un
+URL di una richiesta HTTP, ad esempio. 
+
+uPort utilizza i JWT esattamente in questo modo: si inviano ad un unico endpoint
+\texttt{https://id.uport.me/req/[JWT]},
+il quale si occuperà poi di decodificare e, in base al contenuto del payload,
+agire di conseguenza richiedendo informazioni, aggiungendo
+dichiarazioni o richiedendo di firmare transazioni all'utente specificato nel JWT. 
+
+\subsection{uPort e la sovranità del dato}
+
 uPort, come tutte le soluzioni di self-sovereign identity, inverte totalmente
 il paradigma dell’identità online:
 se prima erano i siti web e servizi su cui ci si registrava ad avere sotto controllo
 tutte le nostre informazioni, avendo quindi la possibilità di utilizzarle per scopi pubblicitari od altro,
 con uPort l’identità e le informazioni associate ad essa sono totalmente sotto il controllo del
-proprietario dell’identità e sono le terze parti a dover richiedere la informazioni necessarie all’utente,
+proprietario dell’identità e sono le terze parti a dover richiedere le informazioni necessarie all’utente,
 che di conseguenza ha anche un maggiore controllo su quali e quante informazioni fornisce.
 
-Questo processo di rilascio di informazioni personali a terzi in uPort si chiama \textbf{Selective Disclosure Flow}, e segue questo flusso:
+Questo processo di rilascio di informazioni personali a terzi
+in uPort si chiama \textbf{Selective Disclosure Flow}, e segue questo flusso:
 
 \newpage
 
@@ -483,8 +532,50 @@ Questo processo di rilascio di informazioni personali a terzi in uPort si chiama
 \end{figure}
 
 La \textbf{Selective Disclosure Request} fatta dal servizio che richiede le credenziali
-all’utente non è altro che un JWT che segue uno schema ben formato inviato ad un
-opportuno endpoint gestito da uPort. Una volta che la richiesta è arrivata al server
+all’utente è un JWT che segue uno schema ben formato inviato ad un
+opportuno endpoint gestito da uPort. 
+
+\begin{table}[htbp]
+    \centering
+    \caption{Campi di una Selective Disclosure Request}
+      \begin{tabular}{p{6.165em}p{19.89em}p{6.335em}}
+      \toprule
+      \textbf{Nome} & \textbf{Descrizione} & \textbf{Obbligatorio} \\
+      \midrule
+      \texttt{type} & Deve avere valore shareReq & Sì \\
+      \midrule
+      \texttt{iss} & Il MNID dell’identità firmataria & Sì \\
+      \midrule
+      \texttt{iat} & Il momento del rilascio & Sì \\
+      \midrule
+      \texttt{exp} & Momento di scadenza del JWT & No \\
+      \midrule
+      \texttt{callback} & URL di callback per restituire la risposta ad una richiesta & No \\
+      \midrule
+      \texttt{net} & Id della rete della chain Ethereum dell’Identità. Es. 0x4 per rinkeby & No \\
+      \midrule
+      \texttt{act} & Tipo dell’account Ethereum: \newline{}- General: scelta dell’utente (default)\newline{}- Segregated: un account basato su uno smart contract unico sarà creato per l’app richiedente\newline{}- Keypair: un account basato su una coppia di chiavi unica sarà creato per l’app richiedente\newline{}- Devicekey: richiede una nuova device key per un account su chain privata\newline{}- None: non viene restituito nessun account & No \\
+      \midrule
+      \texttt{requested} & Le attestazioni autofirmate da un utente. Vettore di tipi di attestazioni\newline{} per attestazioni autofirmate. Ad es: [“name, “email”] & No \\
+      \midrule
+      \texttt{verified} & Le attestazioni verificate richieste da un utente. Vettore di tipi di attestazioni per attestazioni autofirmate. Es: [“name”, “email”] & No \\
+      \midrule
+      \texttt{permissions} & Un vettore di permessi richiesti. Al momento sono solo supportate le notifications & No \\
+      \midrule
+      \texttt{boxPub} & Chiave pubblica del'identità richiedente, usata per criptare i messaggi inviati all'URL di callback & No \\
+      \midrule
+      \newpage
+      \texttt{issc} & Le dichiarazioni auto firmate dal \texttt{iss} di questo messaggio, sia come oggetto di tipi di dichiarazioni
+      per le dichiarazioni autofirmate oppure l'hash IPFS dell'oggetto equivalente. & No \\
+      \midrule
+      \texttt{vc} & Un vettore di dichiarazioni verificate (JWT) o l'hash IPFS dell'oggetto equivalente riguardanti
+      il \texttt{iss} del messaggio  & No \\
+      \bottomrule
+      \end{tabular}%
+    \label{tab:selectivedisclosurerequest}%
+  \end{table}%
+
+Una volta che la richiesta è arrivata al server
 Chasqui (che gestisce lo scambio di JWT tra app uPort e normali web app o DApp)
 la web app/DApp fa polling sul server fino a quando l’utente non approva o nega
 l’accesso alle informazioni richieste: in caso di approvazione la web app/DApp ha

@@ -13,7 +13,7 @@ ai dati che sono poi salvati su altri tipi
 di storage decentralizzato, come IPFS o Swarm.
 
 Per quanto riguarda invece la velocità di processamento delle transazioni, per fare un confronto,
-il circuito VISA processa circa 10.000 transazioni al secondo,
+il circuito VISA processa in media 1.700 transazioni al secondo,
 Ethereum ne processa al massimo 15 al secondo, con grandi problemi quando
 la rete è molto utilizzata (come nel dicembre 2017 con il fenomeno CryptoKitties)
 che causano ritardo nel processamento di transazioni e aumento del costo del gas.
@@ -66,7 +66,9 @@ Usando la libreria sono stati però riscontrati diversi problemi:
   e errori nell'esecuzione di alcune funzioni.
   \item Utilizzo di URI deprecati: gli URI di richiesta di informazioni o di creazione di attestazioni utilizzati nella libreria erano
   diversi da quelli specificati nella documentazione di uPort e deprecati da tempo.
-  \item La memorizzazione delle attestazioni non veniva fatta \emph{on chain}: questo è il codice originale di \texttt{uport-js-client}
+  \item La memorizzazione delle attestazioni non veniva fatta \emph{on chain}: 
+  come da requisiti, le attestazioni sugli utenti devono essere immutabili e quindi salvate su blockchain, ma la versione iniziale di
+  \texttt{uport-js-client} non permetteva ciò, come si vede nel codice seguente:
 
   \begin{lstlisting}[language=JavaScript]
 addAttestationRequestHandler(uri) {
@@ -172,14 +174,17 @@ Sono in diverse fasi di sviluppo (alcune in fasi embrionali, altre già oltre il
 alcune possibili soluzioni per risolvere i problemi di scalabilità di Ethereum.
 
 \begin{itemize}
-  \item Raiden (state channels)
+  \item Raiden (state channels): permette di creare un canale di pagamenti sicuro tra due nodi Ethereum.
+  Quando viene aperto uno state channel le transazioni sono eseguite off-chain tra i due nodi e soltanto alla fine una prova 
+  crittografica (un hash) dell'insieme di transazioni viene inviato alla blockchain Ethereum, diminuendo di molto il carico
+  computazionale su di essa.
   \item Plasma (side-chains)
   \item Casper (Proof-of-Stake) + Sharding
 \end{itemize}
 
 \subsubsection{Privacy}
 
-Diverse startup ed aziende stanno lavorando per rendere possibile la computazione
+Diverse aziende stanno lavorando per rendere possibile la computazione
 e il salvataggio di dati privati, tra cui Keep ed Enigma: la prima avvalendosi di contenitori
 off-chain di dati privati e la seconda tramite l’uso di smart contract privati.
 
@@ -196,11 +201,14 @@ l’architettura di BLINC in relativamente poco tempo.
 L’architettura uPort cambierà radicalmente di qui a poco, passando da un’astrazione
 dell’identità basata su smart contract sviluppati internamente in uPort ad una architettura
 basata sugli standard proposti dalla Decentralized Identity Foundation.
+
 A differenza dell’attuale architettura dove la creazione di un’identità richiede
 due transazioni (deploy del contratto Proxy tramite chiamata allo smart contract IdentityManager
 e registrazione dell’Identity Document su smart contract Registry), la registrazione
 di un’identità nella nuova architettura richiederà soltanto
-la creazione di un account Ethereum, ed è quindi gratuita.
+la creazione di un account Ethereum, ed è quindi gratuita, dettaglio non da poco perchè
+permetterà di rimuovere il loro server di finanziamento delle transazioni Sensui, andando di fatto ad
+avvicinarsi ad una architettura per la gestione di identità completamente decentralizzata.
 
 \subsection{Su BLINC}
 

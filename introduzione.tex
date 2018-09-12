@@ -75,6 +75,8 @@ che si colloca il progetto su cui è stato condotto e sviluppato il tirocinio.
 
 \section{Descrizione della tecnologia e motivazione della scelta di Ethereum}
 
+\subsection{Blockchain}
+
 Data la necessità di avere un sistema sicuro e trasparente di caricamento e validazione di informazioni
 (documenti, certificati, contratti),
 la blockchain è stata la scelta tecnologica più ovvia per BLINC.
@@ -108,13 +110,15 @@ ciò sarebbe computazionalmente quasi impossibile.
 La blockchain è nata con Bitcoin, sistema peer-to-peer per una valuta digitale creato da Satoshi Nakamoto nel 2009
 basato su una blockchain distribuita e decentralizzata. 
 Distribuzione e decentralizzazione sono fondamentali perché rendono la blockchain di fatto incensurabile
-e senza un unico point-of-failure. Chiunque può unirsi alla rete Bitcoin: è sufficiente eseguire un client Bitcoin che gestisce un wallet, ovvero
-una chiave privata, una chiave pubblica ed un indirizzo Bitcoin, e connette il dispositivo su cui è installato come nodo della rete.
+e senza un unico point-of-failure. Chiunque può unirsi alla rete Bitcoin: è sufficiente eseguire un client Bitcoin che gestisce un wallet (
+una chiave privata, una chiave pubblica ed un indirizzo Bitcoin) e connette il dispositivo su cui è installato come nodo della rete.
+
+\subsection{Ethereum}
 
 Ethereum prende tutte le caratteristiche di Bitcoin e le amplia, a partire dalla criptovaluta nativa del sistema, l'Ether.
 L'Ether, oltre a fungere da scambio di valore tra un utente della rete ed un altro, serve anche a pagare il gas, ovvero la tassa
 introdotta per evitare lo spam di transazioni sulla rete, necessario per inviare transazioni che possono anche non avere valore,
-ma possono ad esempio eseguire del codice.
+ma possono ad esempio contenere del codice.
 
 Ethereum infatti rende la sua blockchain facilmente programmabile tramite \textbf{smart contract}, ovvero programmi scritti
 in un linguaggio di programmazione ad alto livello come Solidity (simil-JavaScript) o Vyper (simil-Python),
@@ -126,6 +130,7 @@ Esattamente come in ogni blockchain distribuita e decentralizzata ogni nodo dell
 l’esecuzione delle istruzioni, ma permette lo sviluppo di applicazioni che necessitano di trasparenza, sicurezza ed immutabilità.
 
 \subsection{Perché Ethereum per BLINC?}
+
 Nonostante la giovinezza del progetto, Ethereum si è già imposto come standard \emph{de-facto}
 per lo sviluppo di applicazioni decentralizzate basate su smart contract
 (è stato il primo a portare il concetto di smart contract su architetture
@@ -151,7 +156,8 @@ oltre che a un progetto di ricerca, un prodotto vendibile.
 
 L’architettura è composta da (da sinistra a destra, dall’alto in basso):
 \begin{itemize}
-    \item Applicazione mobile (native Android ed iOS) e web app: servono ai migranti ed agli operatori per interfacciarsi ai servizi di BLINC.
+    \item Applicazione mobile (native Android ed iOS) e web app: servono ai migranti ed agli operatori
+    per interfacciarsi ai servizi di BLINC.
     comunicano con i server REST e di risorse tramite chiamate ad API
     \item Database NoSQL (MongoDB): necessario per memorizzare informazioni e wallet criptati degli utenti
     \item Server di back-end (Loopback, framework di creazione di API basato su NodeJS): espone gli endpoint API richiamabili
@@ -160,10 +166,13 @@ L’architettura è composta da (da sinistra a destra, dall’alto in basso):
     \item HTTP Resources Server: necessario per servire risorse statiche (immagini, documenti…) ai client
     \item uPort Identity Provider: insieme di \emph{smart contract} uPort distribuiti sui nodi Ethereum sottostanti che rendono
     possibile la creazione e gestione di identità e di attestazioni relative ad esse.
-    \item Blockchain Privata Ethereum: insieme di nodi che eseguono istanze del client Ethereum Geth.
-    \item IPFS Storage Server: un nodo IPFS, sistema di storage decentralizzato, necessario per salvare i documenti cifrati degli utenti.
-    \item Tools environment: strumenti di monitoraggio della chain privata Ethereum citata in precedenza, in particolare un \emph{block explorer} ed un
-    \emph{netstats}, che permettono rispettivamente di visualizzare le transazioni incluse per blocco e di avere una visione di insieme sulla rete Ethereum privata,
+    \item Blockchain Privata Ethereum: insieme di macchine che eseguono istanze del client Ethereum Geth.
+    \item IPFS Storage Server: un nodo IPFS, sistema di storage decentralizzato, necessario per salvare i 
+    documenti cifrati degli utenti.
+    \item Tools environment: strumenti di monitoraggio della chain privata Ethereum citata in precedenza,
+    in particolare un \emph{block explorer} ed un
+    \emph{netstats}, che permettono rispettivamente di visualizzare le transazioni incluse per blocco
+    e di avere una visione di insieme sulla rete Ethereum privata,
     tra cui la difficoltà della rete, i nodi che partecipano ad essa e l'uptime.
 \end{itemize}
 
@@ -184,7 +193,8 @@ In questa prima versione il flusso d’interazione base è quindi questo:
 \subsubsection{Utente registrato}
 
 L’utente apre l’applicazione di BLINC, inserisce e-mail/nome utente e password che vengono inviati all’OAuth server:
-se e-mail/nome utente esistono e la password associata è corretta viene restituito un token di autorizzazione tramite il quale l’utente
+se e-mail/nome utente esistono e la password associata è corretta viene restituito un token di autorizzazione
+tramite il quale l’utente
 potrà accedere alle API protette del backend.
 
 Grazie al token ricevuto, l’utente può accedere innanzitutto alla propria identità uPort, salvata su database, 
