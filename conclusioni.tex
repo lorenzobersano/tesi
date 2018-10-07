@@ -1,5 +1,15 @@
 \chapter{Conclusioni}
 
+\section{Risultati ottenuti}
+
+Nella prima versione di BLINC io ed i miei colleghi siamo riusciti a creare una versione base del
+sistema di gestione di identità ed attestazioni su di esse e sui documenti
+che le riguardano (salvati su storage decentralizzato IPFS) secondo l'architettura descritta
+in precedenza.
+
+In particolare ho sviluppato il sistema di creazione e gestione delle identità e di creazione e visualizzazione
+di attestazioni e dichiarazioni creando delle apposite API REST consumabili da web e da mobile.
+
 \section{Problemi aperti}
 
 \subsection{Su Ethereum e blockchain in generale}
@@ -10,12 +20,12 @@ Eseguire calcoli e salvare molti dati su una blockchain è troppo lento e costos
 Per quanto riguarda il salvataggio di moli di dati
 importanti si ha una soluzione che consiste nel memorizzare soltanto i riferimenti crittografici
 ai dati che sono poi salvati su altri tipi
-di storage decentralizzato, come IPFS o Swarm.
+di storage decentralizzato, come IPFS o Swarm\footnote{Swarm: http://theswarm.eth.show/}.
 
 Per quanto riguarda invece la velocità di processamento delle transazioni, per fare un confronto,
-il circuito VISA processa in media 1.700 transazioni al secondo,
+il circuito VISA processa fino a 24.000 transazioni al secondo \cite{WEBSITE:10},
 Ethereum ne processa al massimo 15 al secondo, con grandi problemi quando
-la rete è molto utilizzata (come nel dicembre 2017 con il fenomeno CryptoKitties)
+la rete è molto utilizzata (come nel dicembre 2017 con il fenomeno CryptoKitties \cite{WEBSITE:9})
 che causano ritardo nel processamento di transazioni e aumento del costo del gas.
 
 \subsubsection{Privacy}
@@ -63,14 +73,18 @@ Usando la libreria sono stati però riscontrati diversi problemi:
 
 \begin{itemize}
   \item Errori strutturali e sintattici del codice: utilizzo di alcune variabili non dichiarate
-  e errori nell'esecuzione di alcune funzioni.
+  e errori nell'esecuzione di alcune funzioni, sistemati velocemente.
   \item Utilizzo di URI deprecati: gli URI di richiesta di informazioni o di creazione di attestazioni utilizzati nella libreria erano
   diversi da quelli specificati nella documentazione di uPort e deprecati da tempo.
+  Dato che l'utilizzo è solo temporaneo per il progetto ho preferito mantenere gli URI
+  deprecati per non perdere troppo tempo a rifattorizzare l'intera libreria.
   \item La memorizzazione delle attestazioni non veniva fatta \emph{on chain}: 
   come da requisiti, le attestazioni sugli utenti devono essere immutabili e quindi salvate su blockchain, ma la versione iniziale di
-  \texttt{uport-js-client} non permetteva ciò, come si vede nel codice seguente:
+  \texttt{uport-js-client} non permetteva ciò, come si vede nel codice seguente,
+  che va semplicemente ad aggiungere le attestazioni come campi di un oggetto
+  \texttt{UPortClient}:
 
-  \begin{lstlisting}[language=JavaScript]
+  \begin{lstlisting}[language=JavaScript, numbers=none]
 addAttestationRequestHandler(uri) {
   const params = getUrlParams(uri)
 
@@ -95,11 +109,12 @@ addAttestationRequestHandler(uri) {
 }
   \end{lstlisting}
 
-  La versione da me modificata per l'inserimento di attestazioni 
-  
-  sull'\texttt{EthereumClaimsRegistry} della stessa funzione è la seguente: 
+  Ciò che si vuole per BLINC è però che tutte le attestazioni siano visibili a tutti
+  e approvate su blockchain, perciò ho dovuto effettuare delle modifiche direttamente
+  alla libreria per inserire correttamente attestazioni 
+  sull'\texttt{ethereum-claims-registry}:
 
-  \begin{lstlisting}[language=JavaScript]
+  \begin{lstlisting}[language=JavaScript, numbers=none]
 async addAttestationRequestHandler(uri) {
 
   // Creates an object contract with a specific ABI 
@@ -174,26 +189,24 @@ Sono in diverse fasi di sviluppo (alcune in fasi embrionali, altre già oltre il
 alcune possibili soluzioni per risolvere i problemi di scalabilità di Ethereum.
 
 \begin{itemize}
-  \item Raiden (state channels): permette di creare un canale di pagamenti sicuro tra due nodi Ethereum.
-  Quando viene aperto uno state channel le transazioni sono eseguite off-chain tra i due nodi e soltanto alla fine una prova 
-  crittografica (un hash) dell'insieme di transazioni viene inviato alla blockchain Ethereum, diminuendo di molto il carico
-  computazionale su di essa.
-  \item Plasma (side-chains)
-  \item Casper (Proof-of-Stake) + Sharding
+  \item Raiden (state channels) \footnote{Raiden: https://raiden.network/}
+  \item Plasma (side-chains) \footnote{Plasma: http://plasma.io/}
+  \item Casper (Proof-of-Stake) + Sharding \footnote{Sharding: https://github.com/ethereum/wiki/wiki/Sharding-FAQs}
 \end{itemize}
 
 \subsubsection{Privacy}
 
 Diverse aziende stanno lavorando per rendere possibile la computazione
-e il salvataggio di dati privati, tra cui Keep ed Enigma: la prima avvalendosi di contenitori
-off-chain di dati privati e la seconda tramite l’uso di smart contract privati.
+e il salvataggio di dati privati, tra cui Keep\footnote{https://keep.network/} \cite{ARTICLE:1} ed Enigma\footnote{https://enigma.co/}:
+la prima avvalendosi di contenitori off-chain di dati privati e la seconda tramite
+l’uso di smart contract privati \cite{ARTICLE:2}.
 
 \subsection{Su uPort}
 
 \subsubsection{SDK mobile}
 
 Lo sviluppo delle SDK procede come si vede sui repository GitHub di uPort,
-quindi si raggiungerà il livello di maturazione necessario a decentralizzare
+quindi si raggiungerà il livello di maturità necessario a decentralizzare
 l’architettura di BLINC in relativamente poco tempo.
 
 \subsubsection{Rivoluzione dell'architettura di uPort}
@@ -230,5 +243,5 @@ Mongo è la decentralizzazione: un’identità può avere una o più istanze di 
 tramite un meccanismo di routing basato su URI collegati all’identificatore dell’identità.
 Tutte le istanze di Hub si sincronizzano tra di loro, garantendo così la consistenza dei dati
 al loro interno e permettendo al proprietario dei dati di accedervi da ovunque, anche offline.
-Molto probabilmente si sfrutteranno i 3box,
+Molto probabilmente si sfrutterà 3Box\footnote{3Box: http://alpha.3box.io/},
 ovvero l’implementazione del team di uPort della specifica degli Identity Hub.

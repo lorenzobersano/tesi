@@ -2,40 +2,36 @@
 
 \section{Analisi dei requisiti}
 Come da requisiti, l’obbiettivo principale di BLINC è quello di creare un portadocumenti digitale
-i cui documenti inseriti rimangono sotto il controllo del proprietario.
+dove i documenti inseriti rimangono sotto il controllo del proprietario.
 
-Questo requisito introduce il concetto di \textbf{sovranità del dato} (o self-sovereign identity), ovvero il totale
-controllo della propria identità digitale senza dover dipendere da terzi come Facebook o SPID per la Pubblica Amministrazione.
+Questo requisito introduce il concetto di \textbf{sovranità del dato} e di \textbf{identità a sovranità personale} (o self-sovereign identity),
+ovvero il totale controllo della propria identità digitale senza dover dipendere da terzi come Facebook o SPID per la Pubblica Amministrazione.
 
 La self-sovereign identity è soltanto l’ultima di una serie di evoluzioni che la gestione dell’identità digitale
-ha subìto nel tempo: inizialmente si aveva il modello a silos, ovvero la creazione di credenziali diverse per ogni
-servizio di cui un utente fruisce.
+ha subìto nel tempo: inizialmente si aveva il \textbf{modello a silos}, ovvero la creazione di credenziali diverse per ogni
+servizio di cui un utente fruisce, purtroppo ancora molto diffuso.
 
-Successivamente si è passati ad un modello federato, nel quale le credenziali per un determinato servizio/sistema
+Successivamente si è passati ad un \textbf{modello federato}, nel quale le credenziali per un determinato servizio/sistema
 vengono riconosciute ed accettate anche in altri sistemi. Esempi di questo modello applicato in generale sono
 Facebook e Google Login, tramite i quali si può accedere ai siti/applicazioni che li supportano utilizzando le
 proprie credenziali Facebook/Google, mentre SPID è un esempio di un’applicazione a livello di Pubblica Amministrazione 
 di questo modello. 
 
-La self-sovereign identity non sarebbe mai stata possibile con i tradizionali sistemi di Identity Providing
+L'identità a sovranità personale non sarebbe mai stata possibile con i tradizionali sistemi di Identity Providing
 centralizzati, ma con l’avvento della blockchain si è finalmente potuto iniziare ad esplorare soluzioni di sovranità
 del dato grazie soprattutto a due importanti proprietà: la \textbf{pseudonimizzazione} e la \textbf{decentralizzazione}.
 
 La prima è fondamentale anche in ottica GDPR ed è data dall’intrinseca capacità della blockchain di mantenere 
 riferimenti ad informazioni tramite il loro hash, la seconda è importante in quanto un 
-identity provider basato su blockchain è sempre disponibile al contrario degli identity provider centralizzati che,
+Identity Provider basato su blockchain è sempre disponibile al contrario degli Identity Provider centralizzati che,
 se non disponibili, impossibilitano l’accesso a servizi.
 Alcune aziende stanno implementando soluzioni di self-sovereign identity, e per BLINC sono state esaminate e
-valutate le seguenti:
+valutate le seguenti.
 
 \section{Elenco dei prodotti e delle tecnologie disponibili}
 
 \begin{itemize}
-  \item \textbf{uPort}:
-  Sviluppato sotto l’egida di ConsenSys, uPort è un sistema per la self-sovereign identity basato su Ethereum. 
-
-  \item \textbf{Civic}:
-
+  \item \textbf{Civic}\footnote{Civic: https://www.civic.com/}:
   Civic è una piattaforma composta da smart contract ed un token per lo scambio
   di valore basata su Rootstock, una side-chain di Bitcoin che permette l’esecuzione di smart contract.
 
@@ -48,33 +44,37 @@ valutate le seguenti:
   Civic come \emph{Utenti} tramite delle transazioni di approvazione sulla blockchain chiamate attestazioni.
   Una attestazione è in pratica l’hash di un’informazione dell’identità più metadati relativi ad essa
   utilizzabile dai \emph{Fornitori di servizi} per erogare servizi agli utenti abilitati. I fornitori di servizi possono
-  acquistare le attestazioni ai validatori tramite smart contract pagando con i token del sistema Civic.
+  acquistare le attestazioni ai validatori tramite smart contract pagando con i token del sistema Civic,
+  i quali verranno in parte anche allocati agli utenti soggetti delle attestazioni in modo
+  da incentivare la partecipazione al sistema.
 
-  \begin{figure}[!ht]
-    \includegraphics[scale=0.5]{civic}
-    \caption{Diagramma di funzionamento di Civic.}
-    \label{fig:civic}
-  \end{figure}
+  \begin{center}
+    \includegraphics[width=\linewidth]{civic}
+    \captionof{figure}{Diagramma di funzionamento di Civic.}
+  \end{center}
 
-  \item \textbf{SelfKey}:
-
-  Sviluppato dalla SelfKey Foundation, SelfKey è un sistema basato su Blockchain Ethereum composto
+  \item \textbf{SelfKey}\footnote{SelfKey: https://selfkey.org/}:
+  sviluppato dalla SelfKey Foundation, SelfKey è un sistema basato su Blockchain Ethereum composto
   da un wallet personale per il possessore dell’identità, un marketplace di prodotti e servizi,
-  un protocollo basato su JSON-LD ed un token per scambiare valore.
+  un protocollo basato su JSON-LD\footnote{JSON-LD: https://json-ld.org/} ed un token per scambiare valore.
   L’identità dell’utente è salvata localmente sul suo smartphone sottoforma di wallet (coppia di chiavi),
   al quale vengono associate delle dichiarazioni sugli attributi dell’utente (data di nascita, nome, lavoro…) 
   che possono essere verificate da terzi (banche, organizzazione…)
   in modo da poter accedere a determinati servizi. Con questo metodo si riduce
-  la quantità di dati condivisi alle terze parti allo stretto indispensabile.
+  la quantità di dati condivisi alle terze parti allo stretto indispensabile. 
   
-  \begin{figure}[!ht]
+  \begin{center}
     \includegraphics[width=\linewidth]{selfkey}
-    \caption{Diagramma di funzionamento di SelfKey.}
-    \label{fig:selfkey}
-  \end{figure}
+    \captionof{figure}{Diagramma di funzionamento di SelfKey.}
+  \end{center}
+
+\item \textbf{uPort}\footnote{uPort: http://uport.me}:
+  sviluppato sotto l’egida di ConsenSys, uPort 
+  è il sistema per la self-sovereign identity basato su Ethereum
+  scelto per la gestione delle identità su BLINC.
 \end{itemize}
 
-\section{Descrizione della tecnologia scelta e motivazione}
+\section{uPort}
 
 uPort è un insieme di protocolli, librerie e smart contract che creano uno strato interoperabile di identità,
 che possono aggiungere, togliere e verificare attributi ed attestazioni a sé stesse ed alle altre identità.
@@ -85,22 +85,73 @@ Un’identità in uPort è formata da:
   \item Un \textbf{MNID} (Multi Network IDentifier), che è un oggetto JSON codificato in base58 formato da un campo network, ovvero l’ID della chain Ethereum su cui si trova l’account
   (ad esempio 0x1 per la mainnet) e un campo address il cui valore è un indirizzo Ethereum.
   \item Una chiave privata necessaria per firmare transazioni da inviare alla blockchain.
-  \item Una chiave pubblica inserita nel proprio DID Document (un oggetto JSON) salvato su IPFS e sullo smart contract Registry.
+  \item Una chiave pubblica inserita nel proprio DID Document salvato su IPFS e sullo smart contract Registry.
 \end{itemize}
 
-uPort prevede la gestione di dati sia off-chain che on-chain. 
+Un \textbf{DID Document} è un insieme di dati, come le chiavi pubbliche, rappresentati tipicamente
+come oggetto JSON tramite i quali un'identità decentralizzata può autenticarsi. 
+Possono contenere anche attributi e dichiarazioni sull'identità decentralizzata. \cite{WEBSITE:1}
 
-\subsection{uPort on-chain: smart contract per l'identità}
+\subsubsection{Esempio di DID Document}
 
-Per quanto riguarda la parte on-chain uPort prevede un insieme di smart contract per la gestione delle identità che sono:
+\begin{lstlisting}[numbers=none]
+{
+  "@context": "https://w3id.org/did/v1",
+  "id": "did:uport:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
+  "publicKey": [{
+    "id": "did:uport:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX#keys-1",
+    "type": "Secp256k1VerificationKey2018",
+    "owner": "did:uport:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
+    "publicKeyHex": "04613bb3a4874d27032618f020614c21cbe4c4e47..."
+  }, {
+    "id": "did:uport:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX#keys-2",
+    "type": "Curve25519EncryptionPublicKey",
+    "owner": "did:uport:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
+    "publicKeyBase64": "QCFPBLm5pwmuTOu+haxv0+Vpmr6Rrz/DEEvbcjktQnQ="
+  }],
+  "authentication": [{
+    "type": "Secp256k1SignatureAuthentication2018",
+    "publicKey": "did:uport:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX#keys-1"
+  }]
+}
+\end{lstlisting}
+
+Dato che tutto ciò che viene salvato sulla blockchain è pubblicamente visibile, sarebbe un grave errore quello
+di riportare informazioni private dell'identità direttamente sulla blockchain anche se criptate
+in quanto, essendo le informazioni sulla blockchain come scolpite nella pietra, ciò creerebbe
+problemi in un sicuro futuro nel quale le tecniche di crittazione odierne saranno facilmente superabili anche da semplici calcolatori.
+
+uPort risolve ciò salvando su blockchain soltanto il \textbf{DID} (Decentralized IDentifier) dell'identità digitale,
+ovvero un identificatore non direttamente riconducibile all'utente.
+Tutte le informazioni private vengono invece salvate su una parte dedicata dell'archiviazione del device dell'utente o su 
+server personali dedicati chiamati \emph{Identity Hub}\footnote{Identity Hub: github.com/decentralized-identity/identity-hub}.
+Le informazioni private vengono poi condivise solo sotto consenso dell'identità proprietaria sotto forma di JWT tramite
+procedure che approfondisco nella sottosezione riguardante la gestione di dati off-chain. \cite{WEBSITE:2}
+
+
+\subsection{uPort e dati on-chain: smart contract per l'identità}
+
+Per quanto riguarda i dati salvati su Ethereum uPort 
+prevede un insieme di smart contract
+per la gestione delle identità che sono:
+
+\begin{figure}[!ht]
+    \includegraphics[width=\linewidth]{architetturacontract}
+    \caption{Diagramma di interazione tra gli smart contract di uPort.}
+    \label{fig:architetturacontract}
+\end{figure}
 
 \begin{itemize}
   \item \texttt{Proxy}: uno per ogni identità, funge da rappresentante on-chain di essa. Ogni transazione che viene fatta
   sulla blockchain viene fatta dallo smart contract Proxy e non direttamente dal wallet dell’identità, permettendo
   di conseguenza di mantenere il possesso della propria identità digitale anche nel caso di smarrimento del 
   device su cui è installato il wallet uPort.
+  E' un contract molto semplice: la funzione anonima è una funzione di fallback sul contratto a cui è possibile
+  trasferire Ether (contrassegnata con il modificatore \texttt{payable}) e che registra la chiamata come evento.
+  La funzione \texttt{forward} inoltra semplicemente all'indirizzo destinazione una transazione con il dato \texttt{value}
+  ed eventuali dati passati nel parametro \texttt{data}, dopodiché registra l'avvenuto inoltro come evento.
 
-  \begin{lstlisting}[language=Solidity]
+  \begin{lstlisting}[language=Solidity, numbers=none]
 // Proxy.sol
 pragma solidity 0.4.15;
 import "./libs/Owned.sol";
@@ -126,11 +177,61 @@ contract Proxy is Owned {
     }
 }
   \end{lstlisting}
+  
   \item \texttt{IdentityManager}: uno per chain, funge da Factory degli smart contract Proxy e ne tiene traccia,
   associando, oltre all’identità vera e propria associata al Proxy, altre identità fidate che permettono
   il recupero del possesso del proprio contract Proxy in caso di smarrimento del wallet.
 
-  \begin{lstlisting}[language=Solidity]
+  Il costruttore inizializza tre campi del contract che hanno queste funzioni:
+  
+  \begin{itemize}
+      \item \texttt{userTimeLock}: quando un \texttt{owner} è stato aggiunto si deve aspettare
+        questo tempo prima di poter inviare transazioni
+      \item \texttt{adminTimeLock}: quando un \texttt{owner} è stato aggiunto si deve aspettare questo tempo
+        prima di poter avere capacità amministrative (aggiungere o togliere proprietari o cambiare
+        chiavi di recupero)
+      \item \texttt{adminRate}: quando un \texttt{owner} esegue una funzione amministrativa si deve aspettare
+        questo tempo prima di poter eseguire di nuovo funzioni amministrative
+  \end{itemize}
+
+  La funzione cruciale di questo contract è \texttt{createIdentity}, la quale crea una nuova istanza
+  di un contract Proxy che funge da rappresentante on-chain dell'identità a cui vengono assegnati un
+  proprietario \texttt{owner} ed un account di recupero \texttt{recoveryKeys}.
+
+  La funzione successiva \texttt{createIdentityWithCall} fa la stessa cosa ma in più fa una chiamata
+  ad un contract il cui indirizzo è specificato nel parametro \texttt{destination} e la funzione richiamata
+  è specificata nel parametro \texttt{data}. Un caso in cui questa ulteriore chiamata ad un contract
+  è utile e quello in cui si voglia subito richiamare il contract Registry per salvare il did
+  Document dell'identità.
+
+  La funzione \texttt{registerIdentity} serve per trasferire il controllo di un contract Proxy all'IdentityManager,
+  deve essere richiamata direttamente dal Proxy.
+
+  La funzione \texttt{forwardTo} permette all' \texttt{owner} di un contract Proxy di inoltrare una
+  transazione tramite il proprio Proxy.
+
+  La funzione \texttt{addOwner} permette al proprietario di un Proxy di aggiungere un comproprietario,
+  il quale può iniziare subito a fare transazioni senza aspettare \texttt{userTimeLock}.
+
+  La funzione \texttt{addOwnerFromRecovery} permette all'indirizzo 
+
+  \texttt{recoveryKey} di aggiungere un nuovo proprietario in modo da riottenere il
+  controllo della propria identità. In questo caso
+  il proprietario aggiunto deve aspettare \texttt{userTimeLock} prima di poter fare transazioni.
+
+  La funzione \texttt{removeOwner} permette ad un proprietario con funzioni di
+  amministratore di rimuovere un altro proprietario.
+
+  La funzione \texttt{changeRecovery} permette ad un proprietario di sostituire
+  la \texttt{recoveryKey} con un'altra.
+
+  \texttt{initiateMigration}, \texttt{finalizeMigration}, \texttt{cancelMigration} permettono ad un
+  proprietario di un Proxy di migrare il proprio contract da un IdentityManager ad un altro.
+  La migrazione è finalizzata dallo stesso proprietario dopo un tempo di \texttt{adminTimeLock} tramite
+  la \texttt{finalizeMigration}, mentre la \texttt{cancelMigration} può essere richiamata in qualsiasi
+  momento.
+
+  \begin{lstlisting}[language=Solidity, numbers=none]
 // IdentityManager.sol
 pragma solidity 0.4.15;
 import "./Proxy.sol";
@@ -335,15 +436,20 @@ contract IdentityManager {
     }
 
     function isRecovery(address identity, address recoveryKey) public constant returns (bool) {
-        return recoveryKeys[identity] == recoveryKey;
-    }
+        return r  }
 }
   \end{lstlisting}
 
   \item \textbf{UportRegistry}: uno per chain, serve per aggiungere attributi in forma chiave:valore alle identità,
   in particolare l’hash del DID Document caricato su IPFS.
+  Il metodo \texttt{get} serve per andare a recuperare dal mapping \texttt{registry}
+  il valore corrispondente alla determinata chiave \texttt{registrationIdentifier} inserito dal dato
+  \texttt{issuer} su un determinato \texttt{subject}.
+  Il metodo \texttt{set} serve per andare a inserire o aggiornare nel mapping \texttt{registry}
+  un valore corrispondente alla determinata chiave \texttt{registrationIdentifier} inserito dal dato
+  \texttt{issuer} su un determinato \texttt{subject}.
   
-  \begin{lstlisting}[language=Solidity]
+  \begin{lstlisting}[language=Solidity, numbers=none]
 //UportRegistry.sol
 pragma solidity 0.4.8;
 
@@ -375,9 +481,19 @@ contract UportRegistry{
 }
   \end{lstlisting}
 
-  \item \texttt{EthereumClaimsRegistry}: uno per chain, serve per aggiungere dichiarazioni ed attestazioni alle identità.
+  \item \texttt{EthereumClaimsRegistry}: uno per chain, serve per aggiungere dichiarazioni ed attestazioni
+  alle identità.
+  La funzione \texttt{setClaim} inserisce una dichiarazione nel mapping registry riguardante l'indirizzo \texttt{subject}
+  in forma chiave:valore, stessa cosa per \texttt{setSelfClaim} che però inserisce una dichiarazione sul chiamante
+  stesso della funzione.
+
+  \texttt{getClaim} recupera una dichiarazione dal registry fatta da un dato \texttt{issuer} al dato \texttt{subject}.
   
-  \begin{lstlisting}[language=Solidity]
+  \texttt{removeClaim} controlla prima di tutto che chi cerca di eliminare la dichiarazione sia il dichiarante
+  o il soggetto della dichiarazione, se è così procede con l'eliminazione e l'emissione dell'evento
+  \texttt{ClaimRemoved}.
+  
+  \begin{lstlisting}[language=Solidity, numbers=none]
 //EthereumClaimsRegistry.sol
 pragma solidity 0.4.19;
 
@@ -581,9 +697,7 @@ l’accesso alle informazioni richieste: in caso di approvazione la web app/DApp
 finalmente accesso alle informazioni richieste.
 
 Molto spesso, come nel caso di BLINC, le informazioni vengono richieste per poi essere
-attestate, ad esempio un servizio di e-ticketing potrebbe
-richiedere nome e cognome dell’acquirente per attestare che
-quell’identità ha effettivamente acquistato un biglietto. Per questo motivo
+attestate: per questo motivo
 in congiunzione al flusso di richiesta di informazioni uPort prevede il
 \textbf{Send Verification Flow}, ovvero il processo di attestazione di attributi
 e credenziali dell’identità.
@@ -642,12 +756,40 @@ Tra le tre opzioni esplorate si è deciso di adottare uPort per i seguenti motiv
     sia dal team di sviluppo che dalla community.
 \end{itemize}
 
+\subsection{Stato del progetto}
+
+uPort è ancora in una fase prematura dello sviluppo, nella quale sono possibili stravolgimenti radicali
+dell'architettura sottostante, come è successo a luglio di quest'anno. \cite{WEBSITE:3}
+
+Nonostante ciò, uPort fornisce giù una vasta documentazione ed una grande quantità di librerie e smart
+contract da poter integrare nelle proprie dApp.
+
+Al momento è possibile creare identità ed aggiungere attributi e attestazioni ad esse tramite
+le loro librerie \texttt{uport-connect}\footnote{uPort Connect: https://github.com/uport-project/uport-connect}
+e \texttt{uport-credentials}\footnote{uPort Credentials: https://github.com/uport-project/uport-credentials},
+la prima da integrare in dApp composte da solo frontend, la seconda da utilizzare in dApp che sfruttano
+un backend in NodeJS.
+
+\`E disponibile una terza libreria in JavaScript \texttt{uport-js-client}
+\footnote{uPort JS Client: https://github.com/uport-project/uport-js-client}
+che in teoria dovrebbe solo servire per simulare il comportamento dell'app mobile,
+ma che nel caso di BLINC nella sua prima versione è stata cruciale in quanto
+l'unica in grado di gestire l'intero ciclo di creazione di identità e di aggiunta di attributi ed
+attestazioni su di esse senza l'utilizzo dell'app mobile.
+
+Sono in fase di sviluppo anche \texttt{uport-android-sdk}
+\footnote{uPort Android SDK: https://github.com/uport-project/uport-android-sdk}
+e \texttt{uport-ios-sdk}\footnote{uPort iOs SDK: https://github.com/uport-project/uport-ios-sdk}, che sarebbero
+state fondamentali per BLINC fin da subito, ma dato che ancora ad oggi sono in fase molto embrionale
+siamo dovuti scendere ai compromessi architetturali che spiegherò nelle conclusioni.
+
 \section{Integrazione nel progetto BLINC}
 
 All’interno del progetto uPort è stato utilizzato per la gestione di dichiarazioni
-ed endorsement sui migranti e la creazione di uPort Identity associate ad essi.
+ed attestazioni sui migranti e la creazione di uPort Identity associate ad essi.
 
-\subsection{Gestione di dichiarazioni ed endorsement}
+\subsection{Gestione di dichiarazioni ed attestazioni}
+
 Per quanto riguarda questo caso d’uso di BLINC ci si
 riferisce a questo flusso di interazione:
 
@@ -659,13 +801,64 @@ riferisce a questo flusso di interazione:
 
 Alla rispettiva chiamata API il backend di BLINC va a recuperare dal database
 il wallet associato al migrante che si è autenticato e firma una transazione
-che ha come destinatario lo smart contract ethereum-claims-registry, che permette
+che ha come destinatario lo smart contract \newline 
+\texttt{ethereum-claims-registry}, che permette
 di associare delle dichiarazioni da parte di un indirizzo Ethereum 
 verso un altro in forma chiave:valore.
 
-\textbf{Implementazione}
+\subsubsection{Implementazione}
 
-\begin{lstlisting}[language=JavaScript]
+Queste due funzioni da me implementate utilizzano la struttura delle funzioni
+richiamate dagli endpoint imposta da LoopBack basata su modelli, in questo caso
+il modello \texttt{Declaration} così formato:
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
+{
+  "name": "Declaration",
+  "base": "Model",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "issuer": {
+      "type": "string",
+      "required": true
+    },
+    "subject": {
+      "type": "string",
+      "required": true
+    },
+    "key": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}
+\end{lstlisting}
+
+\texttt{getAllDeclarations} recupera il wallet di
+un dato migrante da MongoDB tramite il suo \texttt{id}
+e, se trovato, istanzia una uPort Identity la quale
+interroga l'\texttt{ethereum-claims-registry} istanziato sulla blockchain privata
+per ottenere tutte le attestazioni riguardanti l'identità e le ritorna in JSON.
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
 /**
 * Gets all the declaration made and returns them.
 * @param {string} id the id of the owner of the declarations.
@@ -683,7 +876,19 @@ Declaration.getAllDeclarations = (id, cb) => {
     }
     );
 };
+\end{lstlisting}
 
+\texttt{addDeclaration} permette ad un'identità uPort di aggiungere una attestazione
+ad un'altra identità. 
+Recupera il wallet di
+una data identità da MongoDB tramite il suo \texttt{id}
+e, se trovato, istanzia una uPort Identity la quale, tramite le librerie di utilità uPort,
+crea un JWT firmato che vale da attestazione tramite la \texttt{credentials.attest}.
+La funzione \texttt{consume} si occupa di parsificare lo URI passato che contiene il JWT
+e inoltrarlo alla apposita funzione \texttt{addAttestationRequestHandler} di uPort JS Client
+che permette di aggiungere credenziali sull'\texttt{ethereum-claims-registry}.
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
 /**
 * Adds a declaration for a specific issuer
 * @param {string} issuer the id of the owner of the declarations.
@@ -724,7 +929,8 @@ Declaration.addDeclaration = (issuer, subject, key, value, cb) => {
             claim: { [key]: value }
         });
 
-        // The consume function is a UPortClient function which parses uPort uris and relays them to the responsible functions
+        // The consume function is a UPortClient function which parses
+        // uPort uris and relays them to the responsible functions
         response = await issuerUportIdentity.consume(
             `me.uport:add?attestations=${declaration}`
         );
@@ -751,14 +957,108 @@ Si segue questo flusso ogni volta che un nuovo utente si iscrive alla piattaform
 \end{figure}
 
 Durante la registrazione viene istanziato sulla blockchain Ethereum privata 
-lo smart contract Proxy associato all’utente e vengono salvate su database le credenziali
+lo smart contract Proxy associato all’utente, vengono salvate su database le credenziali
 dell’utente (nome, cognome…) e gli si associa un wallet che viene poi criptato. A questo punto
 ad ogni login dell’utente viene deserializzata l’identità uPort
 ad esso associata ed il wallet, in modo da poter interagire con la blockchain.
 
-\textbf{Implementazione}
+\subsubsection{Implementazione}
 
-\begin{lstlisting}[language=JavaScript]
+Queste due funzioni da me implementate utilizzano la struttura delle funzioni
+richiamate dagli endpoint imposta da LoopBack basata su modelli, in questo caso
+il modello \texttt{Migrant} così formato:
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
+{
+    "name": "migrant",
+    "base": "Model",
+    "idInjection": false,
+    "options": {
+        "validateUpsert": true
+    },
+    "properties": {
+        "id": {
+        "type": "string",
+        "required": "true"
+        },
+        "info": {
+        "type": "object",
+        "required": "true"
+        },
+        "deviceKeys": {
+        "type": "object",
+        "required": "true"
+        },
+        "recoveryKeys": {
+        "type": "object",
+        "required": "true"
+        },
+        "mnid": {
+        "type": "string",
+        "required": "true"
+        },
+        "initialized": {
+        "type": "boolean",
+        "required": "true"
+        }
+    },
+    "validations": [],
+    "relations": {
+        "documents": {
+        "type": "hasMany",
+        "model": "Document",
+        "foreignKey": ""
+        },
+        "accessTokens": {
+        "type": "hasMany",
+        "model": "token",
+        "foreignKey": ""
+        },
+        "wallet": {
+        "type": "hasOne",
+        "model": "wallet",
+        "foreignKey": ""
+        }
+    },
+    "acls": [
+        {
+        "accessType": "*",
+        "principalType": "ROLE",
+        "principalId": "$authenticated",
+        "permission": "ALLOW"
+        }
+    ],
+    "methods": {}
+    }      
+\end{lstlisting}
+
+\texttt{getMigrant} va semplicemente a recuperare un Migrant in base alla sua
+email e password da MongoDB e lo restituisce.
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
+/**
+* Gets a migrant from the datasource
+* @param {String} email
+* @param {String} password
+*
+* @returns {Object} the migrant instance
+*/
+Migrant.getMigrant = (email, password, cb) => {
+    Migrant.app.models.migrant.findOne(
+    { where: { 'info.email': email, 'info.password': password } },
+    (err, instance) => {
+        if (err) cb(err, null);
+
+        cb(null, instance);
+    }
+    );
+};
+\end{lstlisting}
+
+\texttt{addMigrant} è la funzione fulcro di BLINC: crea o aggiorna un'identità uPort con gli
+attributi passati nel body della richiesta HTTP.
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
 /**
 * creates a new migrant instance in uPort and in mongoDB.
 * input params are personal info of the user.
@@ -809,31 +1109,19 @@ Migrant.addMigrant = (name, familyName, phoneNumber, email, password, cb) => {
     cb(null, migrantID);
     });
 };
-
-/**
-* Gets a migrant from the datasource
-* @param {String} email
-* @param {String} password
-*
-* @returns {Object} the migrant instance
-*/
-Migrant.getMigrant = (email, password, cb) => {
-    Migrant.app.models.migrant.findOne(
-    { where: { 'info.email': email, 'info.password': password } },
-    (err, instance) => {
-        if (err) cb(err, null);
-
-        cb(null, instance);
-    }
-    );
-};
 \end{lstlisting}
 
-Le funzioni \texttt{createUportId} e \texttt{initializeUportId} fanno parte di una libreria scritta da me che funge da middleware tra
-la business logic raggiungibile tramite chiamate API e la libreria \texttt{uport-js-client} (modificata ampiamente per i requisiti di BLINC),
-che simula il funzionamento dei protocolli uPort. Qui il codice delle due funzioni:
+Le funzioni \texttt{createUportId} e \texttt{initializeUportId} fanno parte di una libreria scritta da me
+che funge da middleware tra la business logic raggiungibile tramite chiamate API
+e la libreria \texttt{uport-js-client} che simula il funzionamento dei protocolli uPort.
 
-\begin{lstlisting}[language=JavaScript]
+\texttt{createUportId} crea un'istanza di UPortClient con le informazioni passate dalla richiesta HTTP
+
+precedente, crea un wallet per essa tramite \texttt{uportClient.initKeys()} e invia una transazione
+monetaria all'indirizzo dell'identità in modo che possa pagare il gas per le transazioni di istanziazione
+del Proxy e dell'inserimento del DID Document all'interno dello UportRegistry.
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
 /**
  * creates a UportClient instance.
  * @param {Object} info personal info of the user.
@@ -873,9 +1161,15 @@ const createUportId = (info = {}) => {
 };
 \end{lstlisting}
 
-\begin{lstlisting}[language=JavaScript]
+\texttt{initializeUportId} richiama \texttt{initializeIdentity}, 
+
+metodo di \texttt{UPortClient} che chiama la \texttt{createIdentity}
+dello smart contract IdentityManager, dopodiché salva il DID Document
+dell'identità su IPFS e ne registra l'hash sullo smart contract Registry.
+
+\begin{lstlisting}[language=JavaScript, numbers=none]
 /**
-* Initializes a UportClient instance, meaning that it will deploy uPort IdentityManager contract, save the DID Document on IPFS and save it on Registry contract.
+* Initializes a UportClient instance, meaning that it will get uPort IdentityManager contract, save the DID Document on IPFS and save it on Registry contract.
 * @param {UPortClient} uportClient an instance of UPortClient.
 * @param {Object} appDDO facultative object with additional info in UPortClient is an instance of a uPort application
 *
@@ -899,30 +1193,26 @@ La libreria \texttt{uport-js-client} mette a disposizione una classe
 
 \texttt{UPortClient} così fatta:
 
-\begin{lstlisting}[language=JavaScript]
+\begin{lstlisting}[language=JavaScript, numbers=none]
 class UPortClient {
     constructor(config = {}, initState = {}) {
         this.responseHandler = configResponseHandler(config.responseHandler);
-
         // Object that contains user's info if passed to the constructor, else empty object
         this.info = initState.info || {};
-
         // Keypair of the user necessary to sign transactions
         this.deviceKeys = config.deviceKeys;
-
         // Keypair of another identity, used to recover user's identity (Not used in BLINC as for now Identities are saved on a DB)
         this.recoveryKeys = config.recoveryKeys;
-
         /* Object with this form:
-         *  network: {
-         *   id: "0x456719", this is the id of the private blockchain deployed for BLINC
-         *   rpcUrl: "http://10.83.0.11:8545", this is the endpoint we connect to in order to communicate with the blockchain via EthJS, a JavaScript library
-         *   claimsRegistry: "0xa7b3058152165c72a4dd7c4812c5964f1c26f00d", this is the address of the EthereumClaimsRegistry contract on BLINC's private chain
-         *   registry: "0xdb571079af66edbb1a56d22809584d39c20001d9", this is the address of the UportRegistry contract on BLINC's private chain
-         *   identityManager: "0xff37a57b8d373518abe222db1077ed9a968a5fdf", this is the address of the IdentityManager contract on BLINC's private chain
-         *   storage: "0x7e27e8f3aa4bda26502c38ccd28a4838aeca7966", this is the address of the smart contract that stores the IPFS hashes of user's documents
-         *  },
-         */
+            *  network: {
+            *   id: "0x456719", this is the id of the private blockchain deployed for BLINC
+            *   rpcUrl: "http://10.83.0.11:8545", this is the endpoint we connect to in order to communicate with the blockchain via EthJS, a JavaScript library
+            *   claimsRegistry: "0xa7b3058152165c72a4dd7c4812c5964f1c26f00d", this is the address of the EthereumClaimsRegistry contract on BLINC's private chain
+            *   registry: "0xdb571079af66edbb1a56d22809584d39c20001d9", this is the address of the UportRegistry contract on BLINC's private chain
+            *   identityManager: "0xff37a57b8d373518abe222db1077ed9a968a5fdf", this is the address of the IdentityManager contract on BLINC's private chain
+            *   storage: "0x7e27e8f3aa4bda26502c38ccd28a4838aeca7966", this is the address of the smart contract that stores the IPFS hashes of user's documents
+            *  },
+            */
         this.network = config.network
         ? configNetwork(config.network)
         : configNetwork(networkConfig.network); // have some default connect/setup testrpc
@@ -942,7 +1232,6 @@ class UPortClient {
         const registry = new UportLite({
             networks: this.registryNetwork
         });
-
         // Function that uses the UportLite library
         this.registry = address =>
             new Promise((resolve, reject) => {
@@ -954,19 +1243,15 @@ class UPortClient {
         });
     
         this.verifyJWT = jwt => verifyJWT({ registry: this.registry, address: this.mnid }, jwt);
-
         // Sets the HttpProvider, necessary object for EthJS library in order 
         // to interact with the Ethereum blockchain
         this.provider = config.provider || new HttpProvider(this.network.rpcUrl);
-
         // Creates the EthJS object with the just created HttpProvider as a parameter
         this.ethjs = this.provider ? new EthJS(this.provider) : null;
-
         // Sets addresses of contracts passed in the configuration object
         this.claimsRegistryAddress = this.network.claimsRegistry;
         this.registryAddress = this.network.registry;
         this.identityManagerAddress = this.network.identityManager;
-
         // Necessary to do some actions, if identity is recreated from MongoDB config.initialized has a value,
         // else identity is initialized later
         this.initialized = config.initialized || false;
@@ -976,15 +1261,14 @@ class UPortClient {
 }
 \end{lstlisting}
 
-Questo è il codice per inizializzare una identità uPort ed è richiamato dalla funzione da me creata \texttt{initializeUportId}
+Questo è il codice per inizializzare una identità uPort ed è richiamato dalla funzione da me
+creata \texttt{initializeUportId}
 
-\begin{lstlisting}[language=JavaScript]
+\begin{lstlisting}[language=JavaScript, numbers=none]
 initializeIdentity(initDdo) {
     if (!this.network)
         return Promise.reject(new Error('No network configured'));
-
     const IdentityManagerAddress = this.identityManagerAddress;
-
     // Creates an object contract with a specific ABI 
     // (Application Binary Interface, a low level API-like for contracts, 
     // written in JSON as result of contract compilation)
@@ -992,43 +1276,34 @@ initializeIdentity(initDdo) {
     const IdentityManager = Contract(IdentityManagerArtifact.abi).at(
         IdentityManagerAddress
     );
-
     // Creates keypair and an ethereum address for the user and for recovery
     this.initKeys();
-
     // Calls contract function to create an Identity
     const uri = IdentityManager.createIdentity(
         this.deviceKeys.address,
         this.recoveryKeys.address
     );
-
     // The consume function is a uport-js-client function which, given a URI which conforms to the uPort Protocol specs,
     // parses it and, basing on the given URI format, sends a tx, adds an attestation or requests credentials.
     return this.consume(uri)
     .then(this.getReceipt.bind(this))
     .then(receipt => {
         const log = receipt.logs[0];
-
         const createEventAbi = IdentityManager.abi.filter(
             obj => obj.type === 'event' && obj.name === 'IdentityCreated'
         )[0];
-
         // Gets the Proxy contract address for the identity from
         // the event emitted by the createIdentity function
         this.id = decodeEvent(createEventAbi, log.data, log.topics).identity;
-
         // Creates the MNID for the identity, which is the base58 encoding of the network id and the identity Proxy address
         this.mnid = mnid.encode({ network: this.network.id, address: this.id });
         this.initTransactionSigner(IdentityManagerAddress);
-
         const baseDdo = {
             '@context': 'http://schema.org',
             '@type': 'Person',
             publicKey: this.deviceKeys.publicKey
         };
-
         const ddo = Object.assign(baseDdo, initDdo);
-
         // The code for the writeDDO is below, at a high level it uploads the ddo object to IPFS
         // and adds it to the Registry smart contract
         return this.writeDDO(ddo);
@@ -1046,28 +1321,27 @@ writeDDO(newDdo) {
     // and at a specific address for the Registry contract
     const Registry = Contract(RegistryArtifact.abi).at(this.network.registry);
     return this.getDDO()
-      .then(ddo => {
+        .then(ddo => {
         // If the Identity Document already exists it doesn't overwrite with the given one,
         // otherwise it adds to IPFS the newDdo
         ddo = Object.assign(ddo || {}, newDdo);
         return new Promise((resolve, reject) => {
-          this.ipfs.add(Buffer.from(JSON.stringify(ddo)), (err, result) => {
+            this.ipfs.add(Buffer.from(JSON.stringify(ddo)), (err, result) => {
             if (err) reject(new Error(err));
             resolve(result);
-          });
+            });
         });
-      })
-      .then(res => {
+        })
+        .then(res => {
         const hash = res[0].hash;
         const hexhash = new Buffer(base58.decode(hash)).toString('hex');
         // Removes Qm from ipfs hash, which specifies length and hash
         const hashArg = `0x${hexhash.slice(4)}`;
         const key = 'uPortProfileIPFS1220';
-
         // Writes on the Registry contract the association between the Proxy contract address
         // for the identity and the IPFS hash of its Identity Document which contains its pubkey
         return Registry.set(key, this.id, hashArg);
-      })
-      .then(this.consume.bind(this));
+        })
+        .then(this.consume.bind(this));
 }
 \end{lstlisting}
